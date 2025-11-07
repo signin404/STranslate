@@ -94,15 +94,16 @@ public partial class PluginViewModel : ObservableObject
             return; // User canceled the dialog
         }
         var spkgPluginFilePath = dialog.FileName;
-        var (errMsg, newPlugin, oldPlugin) = _pluginInstance.InstallPlugin(spkgPluginFilePath);
+        var installResult = _pluginInstance.InstallPlugin(spkgPluginFilePath);
 
-        if (oldPlugin != null)
+        if (installResult.RequiredUpgrade && installResult.ExistingPlugin != null)
         {
+            var oldPlugin = installResult.ExistingPlugin;
             // 插件已存在，询问是否升级
             var result = await new ContentDialog
             {
                 Title = _i18n.GetTranslation("PluginUpgrade"),
-                Content = errMsg + "\n" + string.Format(_i18n.GetTranslation("PluginUpgradeConfirm"), oldPlugin.Name, oldPlugin.Version),
+                Content = (installResult.Message ?? string.Empty) + "\n" + string.Format(_i18n.GetTranslation("PluginUpgradeConfirm"), oldPlugin.Name, oldPlugin.Version),
                 PrimaryButtonText = _i18n.GetTranslation("Confirm"),
                 CloseButtonText = _i18n.GetTranslation("Cancel"),
                 DefaultButton = ContentDialogButton.Primary,
@@ -135,14 +136,14 @@ public partial class PluginViewModel : ObservableObject
                 }
             }
         }
-        else if (!string.IsNullOrEmpty(errMsg))
+        else if (!installResult.Succeeded)
         {
             _ = new ContentDialog
             {
                 Title = _i18n.GetTranslation("PluginInstallFailed"),
                 CloseButtonText = _i18n.GetTranslation("Ok"),
                 DefaultButton = ContentDialogButton.Close,
-                Content = errMsg
+                Content = installResult.Message ?? _i18n.GetTranslation("PluginInstallFailed")
             }.ShowAsync().ConfigureAwait(false);
         }
         else

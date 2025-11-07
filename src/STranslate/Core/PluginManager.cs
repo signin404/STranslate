@@ -55,92 +55,84 @@ public class PluginManager
         }
     }
 
-    public (string, PluginMetaData?, PluginMetaData?) InstallPlugin(string spkgFilePath)
+    public PluginInstallResult InstallPlugin(string spkgFilePath)
     {
-        if (string.IsNullOrWhiteSpace(spkgFilePath))
+        if (!TryValidatePackagePath(spkgFilePath, out var validationError))
         {
-            return ("Plugin path cannot be null or empty.", null, null);
+            return PluginInstallResult.Fail(validationError);
         }
 
-        if (!File.Exists(spkgFilePath))
-        {
-            return ("Plugin file does not exist: " + spkgFilePath, null, null);
-        }
-
-        var extension = Path.GetExtension(spkgFilePath).ToLower();
-        if (extension != Constant.PluginFileExtension)
-        {
-            return ("Unsupported plugin file type: " + extension + ". Expected .spkg", null, null);
-        }
+        var extractPath = GetExtractionPath(spkgFilePath);
+        _logger.LogDebug($"Loading plugin from SPKG: {Path.GetFileNameWithoutExtension(spkgFilePath)}");
 
         try
         {
-            var pluginName = Path.GetFileNameWithoutExtension(spkgFilePath);
-            var extractPath = Path.Combine(_tempExtractPath, pluginName);
-
-            _logger.LogDebug($"Loading plugin from SPKG: {pluginName}");
-
-            // 清理之前的解压目录
-            if (Directory.Exists(extractPath))
+            if (!TryPrepareExtractionDirectory(extractPath, out var preparationError))
             {
-                try
-                {
-                    Directory.Delete(extractPath, true);
-                }
-                catch (Exception ex)
-                {
-                    return ("Failed to clean extraction directory: " + ex.Message, null, null);
-                }
+                return PluginInstallResult.Fail(preparationError);
             }
 
-            // 解压.spkg文件
+            if (!TryExtractPackage(spkgFilePath, extractPath, out var extractionError))
+            {
+                TryCleanupExtractionDirectory(extractPath);
+                return PluginInstallResult.Fail(extractionError);
+            }
+
+            PluginMetaData? metaData = null;
             try
             {
-                ZipFile.ExtractToDirectory(spkgFilePath, extractPath);
+                metaData = GetPluginMeta(extractPath);
             }
             catch (Exception ex)
             {
-                return ("Failed to extract SPKG file: " + ex.Message, null, null);
+                TryCleanupExtractionDirectory(extractPath);
+                return PluginInstallResult.Fail($"Unexpected error reading plugin metadata: {ex.Message}");
             }
 
-            var metaData = GetPluginMeta(extractPath);
-
-            if (metaData == null || string.IsNullOrEmpty(metaData.PluginID))
+            if (metaData == null || string.IsNullOrWhiteSpace(metaData.PluginID))
             {
-                return ("Invalid plugin structure: " + JsonSerializer.Serialize(metaData), null, null);
+                TryCleanupExtractionDirectory(extractPath);
+                var metaSnapshot = metaData == null ? "null" : JsonSerializer.Serialize(metaData);
+                return PluginInstallResult.Fail("Invalid plugin structure: " + metaSnapshot);
             }
-            var existPluginMetaData = AllPluginMetaDatas.FirstOrDefault(x => x.PluginID == metaData.PluginID);
-            if (existPluginMetaData != null)
+
+            var existingPlugin = FindInstalledPlugin(metaData.PluginID);
+            if (existingPlugin != null)
             {
-                if (!Version.TryParse(metaData.Version, out var newPluginVersion))
+                var upgradeDecision = EvaluateExistingPlugin(existingPlugin, metaData);
+
+                if (!upgradeDecision.RequiredUpgrade)
                 {
-                    return ($"无法解析插件版本: {metaData.Version}", null, null);
+                    if (!upgradeDecision.Succeeded)
+                    {
+                        TryCleanupExtractionDirectory(extractPath);
+                    }
+
+                    return upgradeDecision;
                 }
-                if (Version.TryParse(existPluginMetaData.Version, out var existingVersion) &&
-                    newPluginVersion <= existingVersion)
-                {
-                    return ($"插件版本过旧: {metaData.Name} v{metaData.Version}，当前已安装版本为 v{existPluginMetaData.Version}。", null, null);
-                }
-                return ($"可以选择升级到新版本(v{metaData.Version})。", null, existPluginMetaData);
+
+                // Leave extraction directory in place for UpgradePlugin to consume.
+                return upgradeDecision;
             }
 
-            var pluginPath = MoveToPluginPath(extractPath, metaData.PluginID);
-            var result = LoadPluginMetaDataFromDirectory(pluginPath);
-            if (!result.IsSuccess || result.PluginMetaData == null)
+            var loadResult = InstallExtractedPlugin(extractPath, metaData);
+            if (!loadResult.IsSuccess || loadResult.PluginMetaData == null)
             {
-                return ("Failed to load plugin from " + pluginPath + ": " + result.ErrorMessage, null, null);
+                TryCleanupExtractionDirectory(extractPath);
+                return PluginInstallResult.Fail("Failed to load plugin from " + extractPath + ": " + loadResult.ErrorMessage);
             }
 
-            _pluginMetaDatas.Add(result.PluginMetaData);
+            var installedPlugin = loadResult.PluginMetaData;
+            _pluginMetaDatas.Add(installedPlugin);
 
-            // 加载插件语言资源
-            Ioc.Default.GetRequiredService<Internationalization>()
-                .LoadInstalledPluginLanguages(pluginPath);
-            return ("", result.PluginMetaData, null);
+            LoadPluginLanguageResources(installedPlugin.PluginDirectory);
+            return PluginInstallResult.Success(installedPlugin);
         }
         catch (Exception ex)
         {
-            return ("Unexpected error loading plugin from SPKG " + spkgFilePath + ": " + ex.Message, null, null);
+            TryCleanupExtractionDirectory(extractPath);
+            _logger.LogError(ex, $"Unexpected error loading plugin from SPKG {spkgFilePath}.");
+            return PluginInstallResult.Fail("Unexpected error loading plugin from SPKG " + spkgFilePath + ": " + ex.Message);
         }
     }
 
@@ -148,8 +140,13 @@ public class PluginManager
     {
         try
         {
-            var pluginName = Path.GetFileNameWithoutExtension(spkgFilePath);
-            var extractPath = Path.Combine(_tempExtractPath, pluginName);
+            var extractPath = GetExtractionPath(spkgFilePath);
+
+            if (!Directory.Exists(extractPath))
+            {
+                _logger.LogError($"Upgrade failed because extraction directory was missing: {extractPath}");
+                return false;
+            }
 
             // 标记旧插件目录以便在重启时删除
             File.Create(Path.Combine(oldPlugin.PluginDirectory, Constant.NeedDelete)).Dispose();
@@ -205,11 +202,6 @@ public class PluginManager
 
     #region Private Methods
 
-    /// <summary>
-    /// 从单个插件目录加载插件
-    /// </summary>
-    /// <param name="pluginDirectory">插件目录路径</param>
-    /// <returns>插件加载结果</returns>
     private PluginLoadResult LoadPluginMetaDataFromDirectory(string pluginDirectory)
     {
         var metaData = GetPluginMeta(pluginDirectory);
@@ -251,6 +243,136 @@ public class PluginManager
 
         return results;
     }
+
+    private bool TryValidatePackagePath(string spkgFilePath, out string errorMessage)
+    {
+        if (string.IsNullOrWhiteSpace(spkgFilePath))
+        {
+            errorMessage = "Plugin path cannot be null or empty.";
+            return false;
+        }
+
+        if (!File.Exists(spkgFilePath))
+        {
+            errorMessage = "Plugin file does not exist: " + spkgFilePath;
+            return false;
+        }
+
+        var extension = Path.GetExtension(spkgFilePath).ToLowerInvariant();
+        if (extension != Constant.PluginFileExtension)
+        {
+            errorMessage = "Unsupported plugin file type: " + extension + ". Expected .spkg";
+            return false;
+        }
+
+        errorMessage = string.Empty;
+        return true;
+    }
+
+    private string GetExtractionPath(string spkgFilePath)
+    {
+        var pluginName = Path.GetFileNameWithoutExtension(spkgFilePath);
+        if (string.IsNullOrWhiteSpace(pluginName))
+        {
+            throw new InvalidOperationException("Unable to determine plugin name from package path.");
+        }
+
+        return Path.Combine(_tempExtractPath, pluginName);
+    }
+
+    private bool TryPrepareExtractionDirectory(string extractPath, out string errorMessage)
+    {
+        try
+        {
+            if (Directory.Exists(extractPath))
+            {
+                Directory.Delete(extractPath, true);
+            }
+
+            Directory.CreateDirectory(extractPath);
+            errorMessage = string.Empty;
+            return true;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Failed to prepare extraction directory: " + ex.Message;
+            return false;
+        }
+    }
+
+    private bool TryExtractPackage(string spkgFilePath, string extractPath, out string errorMessage)
+    {
+        try
+        {
+            ZipFile.ExtractToDirectory(spkgFilePath, extractPath);
+            errorMessage = string.Empty;
+            return true;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Failed to extract SPKG file: " + ex.Message;
+            return false;
+        }
+    }
+
+    private PluginInstallResult EvaluateExistingPlugin(PluginMetaData existingPlugin, PluginMetaData incomingPlugin)
+    {
+        if (!Version.TryParse(incomingPlugin.Version, out var incomingVersion))
+        {
+            return PluginInstallResult.Fail($"无法解析插件版本: {incomingPlugin.Version}", existingPlugin);
+        }
+
+        if (Version.TryParse(existingPlugin.Version, out var installedVersion) && incomingVersion <= installedVersion)
+        {
+            var message = $"插件版本过旧: {incomingPlugin.Name} v{incomingPlugin.Version}，当前已安装版本为 v{existingPlugin.Version}。";
+            return PluginInstallResult.Fail(message, existingPlugin);
+        }
+
+        var upgradeMessage = $"可以选择升级到新版本(v{incomingPlugin.Version})。";
+        return PluginInstallResult.RequiresUpgrade(upgradeMessage, existingPlugin);
+    }
+
+    private PluginLoadResult InstallExtractedPlugin(string extractPath, PluginMetaData metaData)
+    {
+        try
+        {
+            var pluginPath = MoveToPluginPath(extractPath, metaData.PluginID);
+            return LoadPluginMetaDataFromDirectory(pluginPath);
+        }
+        catch (Exception ex)
+        {
+            return PluginLoadResult.Fail("Failed to finalize plugin installation: " + ex.Message, metaData.Name, ex);
+        }
+    }
+
+    private void LoadPluginLanguageResources(string? pluginDirectory)
+    {
+        if (string.IsNullOrWhiteSpace(pluginDirectory))
+        {
+            return;
+        }
+
+        Ioc.Default.GetRequiredService<Internationalization>()
+            .LoadInstalledPluginLanguages(pluginDirectory);
+    }
+
+    private void TryCleanupExtractionDirectory(string extractPath)
+    {
+        try
+        {
+            if (Directory.Exists(extractPath))
+            {
+                Directory.Delete(extractPath, true);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning($"Failed to cleanup extraction directory {extractPath}: {ex.Message}");
+        }
+    }
+
+    private PluginMetaData? FindInstalledPlugin(string pluginId)
+        => _pluginMetaDatas.FirstOrDefault(x => x.PluginID == pluginId);
 
     private PluginLoadResult LoadPluginPairFromMetaData(PluginMetaData metaData)
     {
@@ -410,17 +532,29 @@ public class PluginManager
             if (group.Count() == 1)
             {
                 uniqueList.Add(group.First());
+                continue;
             }
-            else
-            {
-                // 按版本排序，取最新版本
-                var sorted = group.OrderByDescending(x => x.Version).ToList();
-                uniqueList.Add(sorted.First());
-                duplicateList.AddRange(sorted.Skip(1));
-            }
+
+            var sorted = group
+                .OrderByDescending(GetVersionOrDefault)
+                .ThenByDescending(x => x.Version, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            uniqueList.Add(sorted.First());
+            duplicateList.AddRange(sorted.Skip(1));
         }
 
         return (uniqueList, duplicateList);
+    }
+
+    private static Version GetVersionOrDefault(PluginMetaData metaData)
+    {
+        if (Version.TryParse(metaData.Version, out var parsed))
+        {
+            return parsed;
+        }
+
+        return new Version(0, 0, 0);
     }
 
     private string MoveToPluginPath(string extractPath, string pluginID)
@@ -559,4 +693,39 @@ public class PluginLoadResult
         PluginName = pluginName,
         Exception = ex
     };
+}
+
+public enum PluginInstallStatus
+{
+    Success,
+    Failure,
+    UpgradeRequired
+}
+
+public sealed class PluginInstallResult
+{
+    private PluginInstallResult(PluginInstallStatus status, PluginMetaData? newPlugin, PluginMetaData? existingPlugin, string? message)
+    {
+        Status = status;
+        NewPlugin = newPlugin;
+        ExistingPlugin = existingPlugin;
+        Message = message;
+    }
+
+    public PluginInstallStatus Status { get; }
+    public PluginMetaData? NewPlugin { get; }
+    public PluginMetaData? ExistingPlugin { get; }
+    public string? Message { get; }
+
+    public bool Succeeded => Status == PluginInstallStatus.Success;
+    public bool RequiredUpgrade => Status == PluginInstallStatus.UpgradeRequired;
+
+    public static PluginInstallResult Success(PluginMetaData plugin)
+        => new(PluginInstallStatus.Success, plugin, null, null);
+
+    public static PluginInstallResult Fail(string message, PluginMetaData? existing = null)
+        => new(PluginInstallStatus.Failure, null, existing, message);
+
+    public static PluginInstallResult RequiresUpgrade(string message, PluginMetaData existing)
+        => new(PluginInstallStatus.UpgradeRequired, null, existing, message);
 }
