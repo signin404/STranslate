@@ -53,6 +53,14 @@
                     ItemsSource="{Binding DataProvider.PluginTypes}"
                     SelectedValue="{Binding PluginType}"
                     SelectedValuePath="Value" />
+                <Button
+                    Height="32"
+                    Margin="-6,0,0,0"
+                    VerticalAlignment="Top"
+                    Command="{Binding PluginSummaryCommand}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}">
+                    <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.QuestionCircle_20_Regular}" />
+                </Button>
                 <TextBox
                     x:Name="PluginFilterTextbox"
                     Width="150"

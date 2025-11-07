@@ -6,7 +6,8 @@ using STranslate.Instances;
 using STranslate.Plugin;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 
 namespace STranslate.ViewModels.Pages;
@@ -108,6 +109,41 @@ public partial class PluginViewModel : ObservableObject
         {
             _snackbar.ShowSuccess(_i18n.GetTranslation("PluginInstallSuccess"));
         }
+    }
+
+    [RelayCommand]
+    private async Task PluginSummaryAsync(Button button)
+    {
+        var helpDialog = new ContentDialog()
+        {
+            Owner = Window.GetWindow(button),
+            Content = new StackPanel
+            {
+                Children =
+                {
+                    GetTextBlock("PluginTypeAll", _pluginInstance.PluginMetaDatas.Count.ToString(), new Thickness()),
+                    GetTextBlock("PluginTypeTranslate", _pluginInstance.PluginMetaDatas.Where(x => typeof(ITranslatePlugin).IsAssignableFrom(x.PluginType) || typeof(IDictionaryPlugin).IsAssignableFrom(x.PluginType)).Count().ToString(), new Thickness(0, 24, 0, 10)),
+                    GetTextBlock("PluginTypeOcr", _pluginInstance.PluginMetaDatas.Where(x => typeof(IOcrPlugin).IsAssignableFrom(x.PluginType)).Count().ToString(), new Thickness(0, 24, 0, 10)),
+                    GetTextBlock("PluginTypeTts", _pluginInstance.PluginMetaDatas.Where(x => typeof(ITtsPlugin).IsAssignableFrom(x.PluginType)).Count().ToString(), new Thickness(0, 24, 0, 10)),
+                    GetTextBlock("PluginTypeVocabulary", _pluginInstance.PluginMetaDatas.Where(x => typeof(IVocabularyPlugin).IsAssignableFrom(x.PluginType)).Count().ToString(), new Thickness(0, 24, 0, 0)),
+                }
+            },
+            PrimaryButtonText = (string)Application.Current.Resources["Ok"],
+            DefaultButton = ContentDialogButton.Primary,
+            CornerRadius = new CornerRadius(8),
+            Style = (Style)Application.Current.Resources["ContentDialog"]
+        };
+
+        await helpDialog.ShowAsync();
+
+        TextBlock GetTextBlock(string resourceKey, string text, Thickness thickness) =>
+            new()
+            {
+                Text = $"{(string)Application.Current.Resources[resourceKey]}: {text}",
+                FontSize = 16,
+                TextWrapping = TextWrapping.Wrap,
+                Margin = thickness
+            };
     }
 
     [RelayCommand]
