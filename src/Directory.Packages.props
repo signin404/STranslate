@@ -24,7 +24,7 @@
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="NHotkey.Wpf" Version="3.0.0" />
     <PackageVersion Include="PracticalToolkit.WPF" Version="1.0.4" />
-    <PackageVersion Include="ScreenGrab" Version="1.0.10" />
+    <PackageVersion Include="ScreenGrab" Version="1.0.11" />
     <PackageVersion Include="Sdcb.OpenCvSharp4.mini.runtime.win-x64" Version="4.11.0.35" />
     <PackageVersion Include="Sdcb.OpenVINO" Version="0.7.0" />
     <PackageVersion Include="Sdcb.OpenVINO.PaddleOCR.Models.Online" Version="0.7.0" />
