@@ -360,19 +360,38 @@
                         OnContent="{DynamicResource Show}" />
                 </ui:SettingsCard>
 
-                <ui:SettingsCard Description="{DynamicResource General_FontSizeDescription}" Header="{DynamicResource General_FontSize}">
-                    <ui:SettingsCard.HeaderIcon>
-                        <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.TextFontSize_20_Regular}" />
-                    </ui:SettingsCard.HeaderIcon>
-                    <ikw:SimpleStackPanel Orientation="Horizontal" Spacing="12">
-                        <Slider
-                            Maximum="20"
-                            Minimum="10"
-                            TickPlacement="Both"
-                            Value="{Binding Settings.TextFontSize}" />
-                        <TextBlock VerticalAlignment="Center" Text="{Binding Settings.TextFontSize}" />
-                    </ikw:SimpleStackPanel>
-                </ui:SettingsCard>
+                <control:CardGroup>
+
+                    <ui:SettingsCard Header="{DynamicResource General_FontFamily}">
+                        <ui:SettingsCard.HeaderIcon>
+                            <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.TextFont_20_Regular}" />
+                        </ui:SettingsCard.HeaderIcon>
+                        <ikw:SimpleStackPanel Orientation="Horizontal" Spacing="12">
+                            <Button Command="{Binding ResetFontCommand}" Content="{DynamicResource Reset}" />
+                            <ComboBox
+                                DisplayMemberPath="Source"
+                                FontFamily="Microsoft YaHei UI"
+                                ItemsSource="{Binding Source={StaticResource SortedFonts}}"
+                                SelectedValue="{Binding Settings.AppFont, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                SelectedValuePath="Source" />
+                        </ikw:SimpleStackPanel>
+                    </ui:SettingsCard>
+
+                    <ui:SettingsCard Description="{DynamicResource General_FontSizeDescription}" Header="{DynamicResource General_FontSize}">
+                        <ui:SettingsCard.HeaderIcon>
+                            <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.TextFontSize_20_Regular}" />
+                        </ui:SettingsCard.HeaderIcon>
+                        <ikw:SimpleStackPanel Orientation="Horizontal" Spacing="12">
+                            <Slider
+                                Maximum="20"
+                                Minimum="10"
+                                TickPlacement="Both"
+                                Value="{Binding Settings.TextFontSize}" />
+                            <TextBlock VerticalAlignment="Center" Text="{Binding Settings.TextFontSize}" />
+                        </ikw:SimpleStackPanel>
+                    </ui:SettingsCard>
+
+                </control:CardGroup>
 
                 <ui:SettingsCard Description="{DynamicResource General_ShowPromptDescription}" Header="{DynamicResource General_ShowPrompt}">
                     <ui:SettingsCard.HeaderIcon>
@@ -384,34 +403,16 @@
                         OnContent="{DynamicResource Show}" />
                 </ui:SettingsCard>
 
-                <control:CardGroup>
-
-                    <ui:SettingsCard Header="{DynamicResource General_Language}">
-                        <ui:SettingsCard.HeaderIcon>
-                            <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.LocalLanguage_20_Regular}" />
-                        </ui:SettingsCard.HeaderIcon>
-                        <ComboBox
-                            DisplayMemberPath="Display"
-                            ItemsSource="{Binding Languages}"
-                            SelectedValue="{Binding Settings.Language}"
-                            SelectedValuePath="LanguageCode" />
-                    </ui:SettingsCard>
-
-                    <ui:SettingsCard Header="字体">
-                        <ui:SettingsCard.HeaderIcon>
-                            <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.TextFont_20_Regular}" />
-                        </ui:SettingsCard.HeaderIcon>
-                        <ikw:SimpleStackPanel Orientation="Horizontal" Spacing="12">
-                            <Button Command="{Binding ResetFontCommand}" Content="重置" />
-                            <ComboBox
-                                DisplayMemberPath="Source"
-                                ItemsSource="{Binding Source={StaticResource SortedFonts}}"
-                                SelectedValue="{Binding Settings.AppFont, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                SelectedValuePath="Source" />
-                        </ikw:SimpleStackPanel>
-                    </ui:SettingsCard>
-
-                </control:CardGroup>
+                <ui:SettingsCard Header="{DynamicResource General_Language}">
+                    <ui:SettingsCard.HeaderIcon>
+                        <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.LocalLanguage_20_Regular}" />
+                    </ui:SettingsCard.HeaderIcon>
+                    <ComboBox
+                        DisplayMemberPath="Display"
+                        ItemsSource="{Binding Languages}"
+                        SelectedValue="{Binding Settings.Language}"
+                        SelectedValuePath="LanguageCode" />
+                </ui:SettingsCard>
 
                 <!--#endregion-->
             </ikw:SimpleStackPanel>

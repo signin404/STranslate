@@ -71,6 +71,7 @@
     <sys:String x:Key="General_FontSizeDescription">Input and output control text font size</sys:String>
     <sys:String x:Key="General_ShowPrompt">Show Prompt</sys:String>
     <sys:String x:Key="General_ShowPromptDescription">Whether to display the prompt switch button for AI translation services on the main interface</sys:String>
+    <sys:String x:Key="General_FontFamily">FontFamily</sys:String>
 
     <!--  // Hotkey Page //  -->
     <sys:String x:Key="GlobalHotkeys">Global Hotkeys</sys:String>

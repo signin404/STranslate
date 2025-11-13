@@ -71,6 +71,7 @@
     <sys:String x:Key="General_FontSizeDescription">輸入輸出控制項文字字體大小</sys:String>
     <sys:String x:Key="General_ShowPrompt">提示詞</sys:String>
     <sys:String x:Key="General_ShowPromptDescription">主介面是否顯示 AI 翻譯服務的提示詞切換按鈕</sys:String>
+    <sys:String x:Key="General_FontFamily">字體</sys:String>
 
     <!--  // Hotkey Page //  -->
     <sys:String x:Key="GlobalHotkeys">全域快速鍵</sys:String>

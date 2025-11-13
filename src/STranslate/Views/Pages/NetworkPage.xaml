@@ -245,7 +245,7 @@
                         </ui:SettingsCard.Style>
                         <ScrollViewer MaxHeight="100" VerticalScrollBarVisibility="Auto">
                             <TextBlock
-                                FontFamily="Consolas"
+                                FontFamily="Consolas, 'Courier New'"
                                 FontSize="12"
                                 Text="{Binding TestResult}"
                                 TextWrapping="Wrap" />
