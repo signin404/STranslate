@@ -104,7 +104,7 @@
                             Source="{Binding MetaData.IconPath}" />
                         <TextBlock
                             VerticalAlignment="Center"
-                            FontSize="12"
+                            FontSize="{DynamicResource {x:Static ui:ThemeKeys.CaptionTextBlockFontSizeKey}}"
                             Text="{Binding DisplayName}" />
                         <!--  // https://learn.microsoft.com/zh-cn/windows/apps/design/style/segoe-fluent-icons-font //  -->
                         <TextBlock
@@ -163,7 +163,6 @@
                             Background="Transparent"
                             BorderBrush="{x:Null}"
                             BorderThickness="0"
-                            FontSize="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=FontSize}"
                             Foreground="{DynamicResource {x:Static ui:ThemeKeys.SystemControlErrorTextForegroundBrushKey}}"
                             IsReadOnly="True"
                             Text="{Binding Plugin.DictionaryResult.Text}"
@@ -173,7 +172,6 @@
                             <!--  单词显示  -->
                             <TextBox
                                 Margin="0,0,0,12"
-                                FontSize="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=FontSize, Converter={cnvt:FontSizeConverter}, ConverterParameter=1.5}"
                                 FontWeight="SemiBold"
                                 Foreground="{DynamicResource {x:Static ui:ThemeKeys.TextControlForegroundKey}}"
                                 IsReadOnly="True"
@@ -210,7 +208,7 @@
                                             <TextBlock
                                                 VerticalAlignment="Center"
                                                 FontFamily="Consolas, 'Courier New'"
-                                                FontSize="12"
+                                                FontSize="{DynamicResource {x:Static ui:ThemeKeys.CaptionTextBlockFontSizeKey}}"
                                                 Text="{Binding Phonetic, StringFormat='/\{0\}/'}" />
                                             <!--  音频播放按钮  -->
                                             <Button
@@ -221,7 +219,7 @@
                                                 CommandParameter="{Binding AudioUrl}"
                                                 ToolTip="{DynamicResource PlayPronunciation}"
                                                 Visibility="{Binding AudioUrl, Converter={cnvt:EqualToVisibilityInverseConverter}}">
-                                                <ui:FontIcon FontSize="12" Icon="{x:Static ui:FluentSystemIcons.Speaker1_24_Regular}" />
+                                                <ui:FontIcon FontSize="{DynamicResource {x:Static ui:ThemeKeys.CaptionTextBlockFontSizeKey}}" Icon="{x:Static ui:FluentSystemIcons.Speaker1_24_Regular}" />
                                             </Button>
                                         </ikw:SimpleStackPanel>
                                     </DataTemplate>
@@ -243,7 +241,7 @@
                                             <!--  词性  -->
                                             <TextBlock
                                                 Margin="0,3,0,0"
-                                                FontSize="12"
+                                                FontSize="{DynamicResource {x:Static ui:ThemeKeys.CaptionTextBlockFontSizeKey}}"
                                                 FontWeight="Medium"
                                                 Foreground="{DynamicResource {x:Static ui:ThemeKeys.AccentTextFillColorPrimaryBrushKey}}"
                                                 Text="{Binding PartOfSpeech}"
@@ -252,7 +250,6 @@
                                             <TextBox
                                                 Grid.Column="1"
                                                 Margin="4,0,0,0"
-                                                FontSize="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=FontSize}"
                                                 IsReadOnly="True"
                                                 Style="{DynamicResource TextBlockSimilarStyle}"
                                                 Text="{Binding Means, Converter={cnvt:CollectionToStringConverter}, ConverterParameter=；}"
@@ -300,7 +297,6 @@
                                             Background="{DynamicResource {x:Static ui:ThemeKeys.CardBackgroundFillColorSecondaryBrushKey}}"
                                             CornerRadius="4">
                                             <TextBlock
-                                                FontSize="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=FontSize, Converter={cnvt:FontSizeConverter}, ConverterParameter=0.9}"
                                                 FontStyle="Italic"
                                                 Text="{Binding}"
                                                 TextWrapping="Wrap" />
@@ -413,7 +409,7 @@
                             Source="{Binding MetaData.IconPath}" />
                         <TextBlock
                             VerticalAlignment="Center"
-                            FontSize="12"
+                            FontSize="{DynamicResource {x:Static ui:ThemeKeys.CaptionTextBlockFontSizeKey}}"
                             Text="{Binding DisplayName}" />
                         <!--  条件显示的 ComboBox - 只有 LLM 插件才显示  -->
                         <ContentPresenter Content="{Binding}" ContentTemplateSelector="{StaticResource OutputComboBoxSelector}" />
@@ -502,7 +498,6 @@
                                 Background="Transparent"
                                 BorderBrush="{x:Null}"
                                 BorderThickness="0"
-                                FontSize="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=FontSize}"
                                 IsReadOnly="True"
                                 SnapsToDevicePixels="True"
                                 Text="{Binding Plugin.TransResult.Text}"
@@ -587,7 +582,6 @@
                                     Background="Transparent"
                                     BorderBrush="{x:Null}"
                                     BorderThickness="0"
-                                    FontSize="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=FontSize}"
                                     IsReadOnly="True"
                                     Text="{Binding Plugin.TransBackResult.Text}"
                                     TextWrapping="Wrap">

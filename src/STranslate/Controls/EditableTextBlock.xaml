@@ -7,7 +7,7 @@
 
     <Style TargetType="{x:Type control:EditableTextBlock}">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorPrimaryBrushKey}}" />
-        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontSize" Value="{DynamicResource {x:Static ui:ThemeKeys.CaptionTextBlockFontSizeKey}}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type control:EditableTextBlock}">

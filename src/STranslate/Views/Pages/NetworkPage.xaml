@@ -246,7 +246,7 @@
                         <ScrollViewer MaxHeight="100" VerticalScrollBarVisibility="Auto">
                             <TextBlock
                                 FontFamily="Consolas, 'Courier New'"
-                                FontSize="12"
+                                FontSize="{DynamicResource {x:Static ui:ThemeKeys.CaptionTextBlockFontSizeKey}}"
                                 Text="{Binding TestResult}"
                                 TextWrapping="Wrap" />
                         </ScrollViewer>

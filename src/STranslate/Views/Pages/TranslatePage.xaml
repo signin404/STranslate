@@ -50,7 +50,6 @@
                     <TextBlock
                         Margin="5,0"
                         VerticalAlignment="Center"
-                        FontSize="14"
                         Foreground="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorSecondaryBrushKey}}">
                         <Run Text="{DynamicResource ImTranService}" />
                         <Run Text=":" />
@@ -141,7 +140,6 @@
                     <TextBlock
                         Margin="5,0"
                         VerticalAlignment="Center"
-                        FontSize="14"
                         Foreground="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorSecondaryBrushKey}}">
                         <Run Text="{DynamicResource ReplaceService}" />
                         <Run Text=":" />

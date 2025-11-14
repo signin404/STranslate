@@ -248,7 +248,6 @@
                                 MinWidth="220"
                                 VerticalAlignment="Center"
                                 DisplayMemberPath="Display"
-                                FontSize="14"
                                 ItemsSource="{Binding DataProvider.WindowScreenTypes}"
                                 SelectedValue="{Binding Settings.WindowScreen}"
                                 SelectedValuePath="Value" />
@@ -256,7 +255,6 @@
                                 MinWidth="160"
                                 Margin="18,0,0,0"
                                 VerticalAlignment="Center"
-                                FontSize="14"
                                 ItemsSource="{Binding ScreenNumbers}"
                                 SelectedValue="{Binding Settings.CustomScreenNumber}"
                                 Visibility="{Binding Settings.WindowScreen, Converter={cnvt:EqualToVisibilityConverter}, ConverterParameter={x:Static core:WindowScreenType.Custom}}" />
@@ -272,7 +270,6 @@
                                 MinWidth="160"
                                 VerticalAlignment="Center"
                                 DisplayMemberPath="Display"
-                                FontSize="14"
                                 ItemsSource="{Binding DataProvider.WindowAlignTypes}"
                                 SelectedValue="{Binding Settings.WindowAlign}"
                                 SelectedValuePath="Value" />
@@ -383,11 +380,14 @@
                         </ui:SettingsCard.HeaderIcon>
                         <ikw:SimpleStackPanel Orientation="Horizontal" Spacing="12">
                             <Slider
+                                x:Name="PART_FontSize"
+                                IsSnapToTickEnabled="True"
                                 Maximum="20"
                                 Minimum="10"
+                                TickFrequency="1"
                                 TickPlacement="Both"
                                 Value="{Binding Settings.TextFontSize}" />
-                            <TextBlock VerticalAlignment="Center" Text="{Binding Settings.TextFontSize}" />
+                            <TextBlock VerticalAlignment="Center" Text="{Binding ElementName=PART_FontSize, Path=Value, StringFormat={}{0}}" />
                         </ikw:SimpleStackPanel>
                     </ui:SettingsCard>
 

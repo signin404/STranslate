@@ -35,14 +35,13 @@
                 DockPanel.Dock="Right"
                 Orientation="Horizontal"
                 Spacing="10">
-                <Button Height="34" Command="{Binding AddPluginCommand}">
+                <Button Command="{Binding AddPluginCommand}">
                     <ui:IconAndText Content="{DynamicResource AddPlugin}" Icon="{x:Static ui:FluentSystemIcons.BotAdd_24_Regular}" />
                 </Button>
 
                 <TextBlock
                     Margin="6,0,0,0"
                     VerticalAlignment="Center"
-                    FontSize="14"
                     Foreground="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorSecondaryBrushKey}}">
                     <Run Text="{DynamicResource FilterPlugin}" />
                     <Run Text=":" />
@@ -54,7 +53,6 @@
                     SelectedValue="{Binding PluginType}"
                     SelectedValuePath="Value" />
                 <Button
-                    Height="32"
                     Margin="-6,0,0,0"
                     VerticalAlignment="Top"
                     Command="{Binding PluginSummaryCommand}"
@@ -64,10 +62,9 @@
                 <TextBox
                     x:Name="PluginFilterTextbox"
                     Width="150"
-                    Height="34"
                     Margin="0,0,26,0"
+                    VerticalAlignment="Center"
                     ui:ControlHelper.PlaceholderText="{DynamicResource SearchPlugin}"
-                    FontSize="14"
                     Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
                     TextAlignment="Left"
                     ToolTip="{DynamicResource SearchPluginToolTip}"
@@ -119,7 +116,6 @@
                                     <Setter Property="VerticalAlignment" Value="Center" />
                                     <Setter Property="Cursor" Value="Hand" />
                                     <Setter Property="FontFamily" Value="{DynamicResource FluentSystemIcons}" />
-                                    <Setter Property="FontSize" Value="14" />
                                     <Style.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
                                             <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundPressed}" />

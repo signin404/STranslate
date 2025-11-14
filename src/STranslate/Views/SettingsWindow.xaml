@@ -80,7 +80,7 @@
                 <Grid Margin="0,49,0,25" HorizontalAlignment="Center">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="50" />
-                        <RowDefinition Height="27" />
+                        <RowDefinition Height="30" />
                     </Grid.RowDefinitions>
                     <Image
                         Width="50"

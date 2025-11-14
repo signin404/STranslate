@@ -82,18 +82,18 @@
                     Padding="12,6"
                     Command="{Binding AddPromptCommand}"
                     Content="{DynamicResource Add}"
-                    FontSize="12"
+                    FontSize="{DynamicResource {x:Static ui:ThemeKeys.CaptionTextBlockFontSizeKey}}"
                     Style="{StaticResource AccentButtonStyle}" />
                 <Button
                     Padding="12,6"
                     Command="{Binding CopyPromptCommand}"
                     Content="{DynamicResource Copy}"
-                    FontSize="12" />
+                    FontSize="{DynamicResource {x:Static ui:ThemeKeys.CaptionTextBlockFontSizeKey}}" />
                 <Button
                     Padding="12,6"
                     Command="{Binding RemovePromptCommand}"
                     Content="{DynamicResource Delete}"
-                    FontSize="12" />
+                    FontSize="{DynamicResource {x:Static ui:ThemeKeys.CaptionTextBlockFontSizeKey}}" />
             </ikw:SimpleStackPanel>
 
             <!--  Prompt 列表  -->
@@ -194,13 +194,13 @@
                     Padding="12,6"
                     Command="{Binding AddPromptItemCommand}"
                     Content="{DynamicResource AddPromptItem}"
-                    FontSize="12"
+                    FontSize="{DynamicResource {x:Static ui:ThemeKeys.CaptionTextBlockFontSizeKey}}"
                     Style="{StaticResource AccentButtonStyle}" />
                 <Button
                     Padding="12,6"
                     Command="{Binding RemovePromptItemCommand}"
                     Content="{DynamicResource RemovePromptItem}"
-                    FontSize="12" />
+                    FontSize="{DynamicResource {x:Static ui:ThemeKeys.CaptionTextBlockFontSizeKey}}" />
             </ikw:SimpleStackPanel>
 
             <!--  提示项编辑区域  -->
@@ -295,7 +295,7 @@
                                 CornerRadius="4">
                                 <ikw:SimpleStackPanel Spacing="4">
                                     <TextBlock
-                                        FontSize="12"
+                                        FontSize="{DynamicResource {x:Static ui:ThemeKeys.CaptionTextBlockFontSizeKey}}"
                                         FontWeight="SemiBold"
                                         Foreground="{DynamicResource SystemFillColorAttentionBrush}"
                                         Text="{DynamicResource CustomPromptInstructionTitle}" />

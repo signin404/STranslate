@@ -50,7 +50,6 @@
                 <Image Width="20" Source="pack://application:,,,/Resources/app.ico" />
                 <TextBlock
                     VerticalAlignment="Center"
-                    FontSize="14"
                     Text="{DynamicResource ImageTranslate}"
                     TextWrapping="NoWrap" />
             </ikw:SimpleStackPanel>
@@ -294,7 +293,6 @@
                             AcceptsTab="True"
                             Background="{DynamicResource {x:Static ui:ThemeKeys.CardBackgroundFillColorDefaultBrushKey}}"
                             BorderThickness="0"
-                            FontSize="{Binding Settings.TextFontSize}"
                             Text="{Binding Result, UpdateSourceTrigger=PropertyChanged}"
                             TextWrapping="Wrap"
                             VerticalScrollBarVisibility="Auto" />

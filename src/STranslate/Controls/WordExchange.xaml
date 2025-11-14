@@ -15,7 +15,7 @@
                     <ikw:SimpleStackPanel Orientation="Horizontal" Spacing="6">
                         <TextBlock
                             VerticalAlignment="Center"
-                            FontSize="12"
+                            FontSize="{DynamicResource {x:Static ui:ThemeKeys.CaptionTextBlockFontSizeKey}}"
                             FontWeight="Medium"
                             Foreground="{DynamicResource {x:Static ui:ThemeKeys.SystemControlForegroundBaseMediumBrushKey}}">
                             <Run Text="{TemplateBinding Title}" />
@@ -46,7 +46,6 @@
 
                                                 <Setter Property="Foreground" Value="{DynamicResource {x:Static ui:ThemeKeys.AccentAAFillColorDefaultBrushKey}}" />
                                                 <Setter Property="VerticalAlignment" Value="Center" />
-                                                <Setter Property="FontSize" Value="{Binding RelativeSource={RelativeSource AncestorType=control:WordExchange}, Path=FontSize}" />
 
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">

@@ -99,7 +99,7 @@ public partial class Settings : ObservableObject
     /// <summary>
     /// 输入输出框字体大小
     /// </summary>
-    [ObservableProperty] public partial int TextFontSize { get; set; } = 14;
+    [ObservableProperty] public partial double TextFontSize { get; set; } = 14;
 
     /// <summary>
     /// 主界面Llm服务是否显示提示词按钮
@@ -288,6 +288,7 @@ public partial class Settings : ObservableObject
     {
         ApplyAppFont(true);
         ApplyLanguage(true);
+        ApplyAppFontSize();
         ApplyTheme();
         ApplyDeactived();
     }
@@ -353,6 +354,13 @@ public partial class Settings : ObservableObject
         App.Current.Resources[System.Windows.SystemFonts.MessageFontFamilyKey] = new FontFamily(AppFont);
     }
 
+    private void ApplyAppFontSize()
+    {
+        App.Current.Resources["ControlContentThemeFontSize"] = TextFontSize;    //14
+        App.Current.Resources["CaptionTextBlockFontSize"] = TextFontSize - 2;   //12
+        App.Current.Resources["SubtitleTextBlockFontSize"] = TextFontSize + 6;  //18
+    }
+
     private void ApplyTheme()
     {
         ThemeManager.SetRequestedTheme(App.Current.MainWindow, ColorScheme);
@@ -406,6 +414,9 @@ public partial class Settings : ObservableObject
                 break;
             case nameof(AppFont):
                 ApplyAppFont();
+                break;
+            case nameof(TextFontSize):
+                ApplyAppFontSize();
                 break;
             case nameof(ColorScheme):
                 ApplyTheme();

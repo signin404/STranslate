@@ -51,7 +51,7 @@
                 <TextBlock
                     Margin="6,0,0,0"
                     VerticalAlignment="Center"
-                    FontSize="14"
+                    FontSize="{DynamicResource {x:Static ui:ThemeKeys.ControlContentThemeFontSizeKey}}"
                     Foreground="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorSecondaryBrushKey}}">
                     <Run Text="{DynamicResource FilterService}" />
                     <Run Text=":" />
@@ -62,7 +62,6 @@
                     Height="34"
                     Margin="0,0,26,0"
                     ui:ControlHelper.PlaceholderText="{DynamicResource SearchService}"
-                    FontSize="14"
                     Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
                     TextAlignment="Left"
                     ToolTip="{DynamicResource SearchServiceTooltip}"
