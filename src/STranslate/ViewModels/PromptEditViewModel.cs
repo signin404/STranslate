@@ -51,6 +51,8 @@ public partial class PromptEditViewModel : ObservableObject, IDisposable
         // 监听集合变化，为新添加的 Prompt 也添加监听
         Prompts.CollectionChanged += OnPromptsCollectionChanged;
 
+        PromptItems.CollectionChanged += OnPromptItemsCollectionChanged;
+
         // 选择第一个 Prompt
         if (Prompts.Count > 0)
         {
@@ -74,6 +76,22 @@ public partial class PromptEditViewModel : ObservableObject, IDisposable
             foreach (Prompt prompt in e.OldItems)
             {
                 prompt.PropertyChanged -= OnPromptPropertyChanged;
+            }
+        }
+    }
+
+    private void OnPromptItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (SelectedPrompt == null) return;
+
+        // 当集合发生移动操作时,同步更新 SelectedPrompt.Items
+        if (e.Action == NotifyCollectionChangedAction.Move)
+        {
+            if (e.OldStartingIndex >= 0 && e.NewStartingIndex >= 0)
+            {
+                var item = SelectedPrompt.Items[e.OldStartingIndex];
+                SelectedPrompt.Items.RemoveAt(e.OldStartingIndex);
+                SelectedPrompt.Items.Insert(e.NewStartingIndex, item);
             }
         }
     }
@@ -270,5 +288,6 @@ public partial class PromptEditViewModel : ObservableObject, IDisposable
             prompt.PropertyChanged -= OnPromptPropertyChanged;
         }
         Prompts.CollectionChanged -= OnPromptsCollectionChanged;
+        PromptItems.CollectionChanged -= OnPromptItemsCollectionChanged;
     }
 }
