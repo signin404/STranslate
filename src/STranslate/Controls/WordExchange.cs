@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace STranslate.Controls;
 
@@ -23,4 +24,17 @@ public class WordExchange : ItemsControl
             typeof(string),
             typeof(WordExchange),
             new PropertyMetadata(string.Empty));
+
+    public ICommand? ExecuteCommand
+    {
+        get => (ICommand?)GetValue(ExecuteCommandProperty);
+        set => SetValue(ExecuteCommandProperty, value);
+    }
+
+    public static readonly DependencyProperty ExecuteCommandProperty =
+        DependencyProperty.Register(
+            nameof(ExecuteCommand),
+            typeof(ICommand),
+            typeof(WordExchange));
+
 }

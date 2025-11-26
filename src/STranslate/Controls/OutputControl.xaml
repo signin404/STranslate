@@ -268,25 +268,46 @@
                             <!--#region // 词汇变形 //-->
 
                             <!--  复数形式  -->
-                            <control:WordExchange Title="{DynamicResource Plural}" ItemsSource="{Binding Plugin.DictionaryResult.Plurals}" />
+                            <control:WordExchange
+                                Title="{DynamicResource Plural}"
+                                ExecuteCommand="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=ExplainCommand}"
+                                ItemsSource="{Binding Plugin.DictionaryResult.Plurals}" />
 
                             <!--  过去式  -->
-                            <control:WordExchange Title="{DynamicResource PastTense}" ItemsSource="{Binding Plugin.DictionaryResult.PastTense}" />
+                            <control:WordExchange
+                                Title="{DynamicResource PastTense}"
+                                ExecuteCommand="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=ExplainCommand}"
+                                ItemsSource="{Binding Plugin.DictionaryResult.PastTense}" />
 
                             <!--  过去分词  -->
-                            <control:WordExchange Title="{DynamicResource PastParticiple}" ItemsSource="{Binding Plugin.DictionaryResult.PastParticiple}" />
+                            <control:WordExchange
+                                Title="{DynamicResource PastParticiple}"
+                                ExecuteCommand="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=ExplainCommand}"
+                                ItemsSource="{Binding Plugin.DictionaryResult.PastParticiple}" />
 
                             <!--  现在分词  -->
-                            <control:WordExchange Title="{DynamicResource PresentParticiple}" ItemsSource="{Binding Plugin.DictionaryResult.PresentParticiple}" />
+                            <control:WordExchange
+                                Title="{DynamicResource PresentParticiple}"
+                                ExecuteCommand="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=ExplainCommand}"
+                                ItemsSource="{Binding Plugin.DictionaryResult.PresentParticiple}" />
 
                             <!--  第三人称单数  -->
-                            <control:WordExchange Title="{DynamicResource ThirdPersonSingular}" ItemsSource="{Binding Plugin.DictionaryResult.ThirdPersonSingular}" />
+                            <control:WordExchange
+                                Title="{DynamicResource ThirdPersonSingular}"
+                                ExecuteCommand="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=ExplainCommand}"
+                                ItemsSource="{Binding Plugin.DictionaryResult.ThirdPersonSingular}" />
 
                             <!--  比较级  -->
-                            <control:WordExchange Title="{DynamicResource Comparative}" ItemsSource="{Binding Plugin.DictionaryResult.Comparative}" />
+                            <control:WordExchange
+                                Title="{DynamicResource Comparative}"
+                                ExecuteCommand="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=ExplainCommand}"
+                                ItemsSource="{Binding Plugin.DictionaryResult.Comparative}" />
 
                             <!--  最高级  -->
-                            <control:WordExchange Title="{DynamicResource Superlative}" ItemsSource="{Binding Plugin.DictionaryResult.Superlative}" />
+                            <control:WordExchange
+                                Title="{DynamicResource Superlative}"
+                                ExecuteCommand="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=ExplainCommand}"
+                                ItemsSource="{Binding Plugin.DictionaryResult.Superlative}" />
 
                             <!--#endregion-->
 

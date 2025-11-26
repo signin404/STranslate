@@ -33,7 +33,7 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Button
-                                        Command="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=ExplainCommand}"
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType=control:WordExchange}, Path=ExecuteCommand}"
                                         CommandParameter="{Binding}"
                                         Content="{Binding}">
 
@@ -50,21 +50,15 @@
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
                                                         <Setter Property="Foreground" Value="{DynamicResource {x:Static ui:ThemeKeys.SystemAccentColorLight1BrushKey}}" />
-                                                        <!--<Setter Property="ContentTemplate">
-                                                            <Setter.Value>
-                                                                <DataTemplate>
-                                                                    <TextBlock Text="{Binding}" TextDecorations="Underline" />
-                                                                </DataTemplate>
-                                                            </Setter.Value>
-                                                        </Setter>-->
                                                     </Trigger>
 
                                                     <Trigger Property="IsPressed" Value="True">
                                                         <Setter Property="Foreground" Value="{DynamicResource {x:Static ui:ThemeKeys.SystemAccentColorDark1BrushKey}}" />
                                                     </Trigger>
 
+                                                    <!--  // 禁用时保持默认颜色 //  -->
                                                     <Trigger Property="IsEnabled" Value="False">
-                                                        <Setter Property="Foreground" Value="Gray" />
+                                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static ui:ThemeKeys.AccentAAFillColorDefaultBrushKey}}" />
                                                     </Trigger>
                                                 </Style.Triggers>
                                             </Style>

@@ -178,25 +178,46 @@
                     <!--#region // 词汇变形 //-->
 
                     <!--  复数形式  -->
-                    <control:WordExchange Title="{DynamicResource Plural}" ItemsSource="{Binding DictResult.Plurals}" />
+                    <control:WordExchange
+                        Title="{DynamicResource Plural}"
+                        IsEnabled="False"
+                        ItemsSource="{Binding DictResult.Plurals}" />
 
                     <!--  过去式  -->
-                    <control:WordExchange Title="{DynamicResource PastTense}" ItemsSource="{Binding DictResult.PastTense}" />
+                    <control:WordExchange
+                        Title="{DynamicResource PastTense}"
+                        IsEnabled="False"
+                        ItemsSource="{Binding DictResult.PastTense}" />
 
                     <!--  过去分词  -->
-                    <control:WordExchange Title="{DynamicResource PastParticiple}" ItemsSource="{Binding DictResult.PastParticiple}" />
+                    <control:WordExchange
+                        Title="{DynamicResource PastParticiple}"
+                        IsEnabled="False"
+                        ItemsSource="{Binding DictResult.PastParticiple}" />
 
                     <!--  现在分词  -->
-                    <control:WordExchange Title="{DynamicResource PresentParticiple}" ItemsSource="{Binding DictResult.PresentParticiple}" />
+                    <control:WordExchange
+                        Title="{DynamicResource PresentParticiple}"
+                        IsEnabled="False"
+                        ItemsSource="{Binding DictResult.PresentParticiple}" />
 
                     <!--  第三人称单数  -->
-                    <control:WordExchange Title="{DynamicResource ThirdPersonSingular}" ItemsSource="{Binding DictResult.ThirdPersonSingular}" />
+                    <control:WordExchange
+                        Title="{DynamicResource ThirdPersonSingular}"
+                        IsEnabled="False"
+                        ItemsSource="{Binding DictResult.ThirdPersonSingular}" />
 
                     <!--  比较级  -->
-                    <control:WordExchange Title="{DynamicResource Comparative}" ItemsSource="{Binding DictResult.Comparative}" />
+                    <control:WordExchange
+                        Title="{DynamicResource Comparative}"
+                        IsEnabled="False"
+                        ItemsSource="{Binding DictResult.Comparative}" />
 
                     <!--  最高级  -->
-                    <control:WordExchange Title="{DynamicResource Superlative}" ItemsSource="{Binding DictResult.Superlative}" />
+                    <control:WordExchange
+                        Title="{DynamicResource Superlative}"
+                        IsEnabled="False"
+                        ItemsSource="{Binding DictResult.Superlative}" />
 
                     <!--#endregion-->
 
