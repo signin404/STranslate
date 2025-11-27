@@ -1,4 +1,6 @@
 using System.IO.Pipes;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Windows;
 
 // http://blogs.microsoft.co.il/arik/2010/05/28/wpf-single-instance-application/
@@ -69,7 +71,6 @@ public static class SingleInstance<TApplication> where TApplication : Applicatio
         }
         else
         {
-            // 普通权限下无法激活管理员权限的程序
             _ = SignalFirstInstanceAsync(channelName);
             return false;
         }
@@ -94,7 +95,20 @@ public static class SingleInstance<TApplication> where TApplication : Applicatio
     /// <param name="channelName">Application's IPC channel name.</param>
     private static async Task CreateRemoteServiceAsync(string channelName)
     {
-        using NamedPipeServerStream pipeServer = new NamedPipeServerStream(channelName, PipeDirection.In);
+        // 允许低权限进程访问的安全策略
+        var pipeSecurity = new PipeSecurity();
+        var sid = new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null);
+        pipeSecurity.AddAccessRule(new PipeAccessRule(sid, PipeAccessRights.ReadWrite, AccessControlType.Allow));
+
+        using NamedPipeServerStream pipeServer = NamedPipeServerStreamAcl.Create(
+            channelName,
+            PipeDirection.In,
+            1,
+            PipeTransmissionMode.Byte,
+            PipeOptions.None,
+            inBufferSize: 0,
+            outBufferSize: 0,
+            pipeSecurity);
         while (true)
         {
             // Wait for connection to the pipe
@@ -132,9 +146,7 @@ public static class SingleInstance<TApplication> where TApplication : Applicatio
     {
         // Set main window state and process command line args
         if (Application.Current == null)
-        {
             return;
-        }
 
         ((TApplication)Application.Current).OnSecondAppStarted();
     }
