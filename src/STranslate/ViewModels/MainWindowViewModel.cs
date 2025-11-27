@@ -181,9 +181,17 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void TemporaryTranslate(Service service)
     {
-        if (!SingleTranslateCommand.CanExecute(service) || (service.Options?.TemporaryDisplay ?? false))
+        if (string.IsNullOrWhiteSpace(InputText))
+        {
+            _snakebar.ShowWarning(_i18n.GetTranslation("InputContentIsEmpty"));
             return;
+        }
 
+        if (!SingleTranslateCommand.CanExecute(service))
+        {
+            _snakebar.ShowWarning(_i18n.GetTranslation("WaitingForPreviousExecution"));
+            return;
+        }
         service.Options?.TemporaryDisplay = true;
 
         SingleTranslateCommand.Execute(service);

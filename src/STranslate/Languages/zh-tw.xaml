@@ -261,6 +261,11 @@
     <sys:String x:Key="UseSettingLang">識別失敗</sys:String>
     <sys:String x:Key="IdentifiedCache">緩存</sys:String>
 
+    <!--  // Language Part //  -->
+    <sys:String x:Key="SwapLanguage">交換原始-目標語言</sys:String>
+    <sys:String x:Key="WaitingForPreviousExecution">目前正在執行，請稍候</sys:String>
+    <sys:String x:Key="InputContentIsEmpty">請輸入內容後執行</sys:String>
+
     <!--  // Output Control Context Menu //  -->
     <sys:String x:Key="ExecuteTranslation">執行翻譯</sys:String>
     <sys:String x:Key="AutoBackTranslation">自動回譯</sys:String>

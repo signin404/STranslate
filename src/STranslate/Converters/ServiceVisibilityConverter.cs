@@ -37,14 +37,15 @@ public class ServicePinnedVisibilityConverter : MarkupExtension, IMultiValueConv
 {
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
-        if (values.Length < 2 || values.Any(v => v == DependencyProperty.UnsetValue))
+        if (values.Length < 3 || values.Any(v => v == DependencyProperty.UnsetValue))
             return Visibility.Collapsed;
 
         var isEnabled = (bool)values[0];
         var execMode = (ExecutionMode)values[1];
+        var isTemporaryDisplay = (bool)values[2];
 
         // 当 IsEnabled 为 true 且 ExecutionMode 为 Pinned 时可见
-        if (isEnabled && execMode == ExecutionMode.Pinned)
+        if (isEnabled && execMode == ExecutionMode.Pinned && !isTemporaryDisplay)
         {
             return Visibility.Visible;
         }

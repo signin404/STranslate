@@ -159,7 +159,8 @@
                         Grid.Column="1"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Stretch"
-                        Command="{Binding SwapLanguageCommand}">
+                        Command="{Binding SwapLanguageCommand}"
+                        ToolTip="{DynamicResource SwapLanguage}">
                         <ui:FontIcon FontSize="{DynamicResource STControlFontSize16}" Icon="{x:Static ui:FluentSystemIcons.ArrowSwap_20_Regular}" />
                     </Button>
 
@@ -203,6 +204,7 @@
                                         <MultiBinding Converter="{cnvt:ServicePinnedVisibilityConverter}">
                                             <Binding Path="IsEnabled" />
                                             <Binding Path="Options.ExecMode" />
+                                            <Binding Path="Options.TemporaryDisplay" />
                                         </MultiBinding>
                                     </Button.Visibility>
                                     <Button.Resources>

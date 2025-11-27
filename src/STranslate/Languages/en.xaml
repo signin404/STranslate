@@ -261,6 +261,11 @@
     <sys:String x:Key="UseSettingLang">DetectFailed</sys:String>
     <sys:String x:Key="IdentifiedCache">Cache</sys:String>
 
+    <!--  // Language Part //  -->
+    <sys:String x:Key="SwapLanguage">Swap Source-Target Language</sys:String>
+    <sys:String x:Key="WaitingForPreviousExecution">Currently executing, please wait</sys:String>
+    <sys:String x:Key="InputContentIsEmpty">Please enter content before executing</sys:String>
+
     <!--  // Output Control Context Menu //  -->
     <sys:String x:Key="ExecuteTranslation">Execute Translation</sys:String>
     <sys:String x:Key="AutoBackTranslation">Auto Trans Back</sys:String>
