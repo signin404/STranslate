@@ -9,7 +9,7 @@ packages/
 
 .DS_Store
 
-
+src/Plugins/ThirdPlugins/
 publish/
 
 # rust
