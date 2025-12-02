@@ -233,6 +233,20 @@
     <sys:String x:Key="LogLevel">日志级别</sys:String>
     <sys:String x:Key="ConfirmRestartAndBackup">是否确认重启并备份配置</sys:String>
     <sys:String x:Key="ConfirmRestartAndRestore">是否确认重启并恢复配置</sys:String>
+    <sys:String x:Key="BackupType">备份类型</sys:String>
+    <sys:String x:Key="SelectBackupFile">选择备份文件</sys:String>
+    <sys:String x:Key="SelectRestoreFile">选择恢复文件</sys:String>
+    <sys:String x:Key="BackupConfigSuccess">备份配置成功 [{0}]</sys:String>
+    <sys:String x:Key="RestoreConfigSuccess">恢复配置成功 [{0}]</sys:String>
+    <sys:String x:Key="CheckConfigOrLog">请检查配置或查看日志</sys:String>
+    <sys:String x:Key="BackupSuccess">备份成功 [{0}]</sys:String>
+    <sys:String x:Key="BackupFailed">备份失败,请检查日志</sys:String>
+    <sys:String x:Key="DownloadSuccess">下载成功</sys:String>
+    <sys:String x:Key="DownloadFailed">下载失败：{0} {1}</sys:String>
+    <sys:String x:Key="DownloadException">下载异常：{0}</sys:String>
+    <sys:String x:Key="DeleteFailed">删除失败：{0} {1}</sys:String>
+    <sys:String x:Key="RenameFailed">重命名失败：{0} {1}</sys:String>
+    <sys:String x:Key="RenameException">重命名异常：{0}</sys:String>
 
     <!--  // Common //  -->
     <sys:String x:Key="Add">添加</sys:String>
@@ -427,6 +441,9 @@
     <sys:String x:Key="CopyAfterTranslationSeventh">第七项</sys:String>
     <sys:String x:Key="CopyAfterTranslationEighth">第八项</sys:String>
     <sys:String x:Key="CopyAfterTranslationLast">最后一项</sys:String>
+
+    <sys:String x:Key="BackupTypeLocal">本地备份</sys:String>
+    <sys:String x:Key="BackupTypeWebDav">WebDav备份</sys:String>
 
     <!--  // Plugins //  -->
     <sys:String x:Key="UnsupportedSourceLang">不支持的源语言</sys:String>

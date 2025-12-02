@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using iNKORE.UI.WPF.Modern.Controls;
 using Microsoft.Extensions.Logging;
+using STranslate.Core;
 using STranslate.Plugin;
 using STranslate.ViewModels.Pages;
 using System.Collections.ObjectModel;
@@ -14,6 +15,7 @@ public partial class WebDavContentDialog
 {
     private readonly ILogger<WebDavContentDialog> _logger = Ioc.Default.GetRequiredService<ILogger<WebDavContentDialog>>();
     private readonly ISnackbar _snackbar = Ioc.Default.GetRequiredService<ISnackbar>();
+    private readonly Internationalization _i18n = Ioc.Default.GetRequiredService<Internationalization>();
     private readonly WebDavClient _webDavClient;
     private readonly string _absolutePath;
 
@@ -65,21 +67,23 @@ public partial class WebDavContentDialog
                 using var fileStream = File.Create(fullName);
                 await response.Stream.CopyToAsync(fileStream);
 
-                _snackbar.ShowSuccess("下载成功");
+                _snackbar.ShowSuccess(_i18n.GetTranslation("DownloadSuccess"));
 
                 _result = ContentDialogResult.Primary;
                 Hide();
             }
             else
             {
-                _snackbar.ShowError($"下载失败：{response.StatusCode} {response.Description}");
-                _logger.LogError("WebDav 下载失败：{StatusCode} {Description}", response.StatusCode, response.Description);
+                var message = string.Format(_i18n.GetTranslation("DownloadFailed"), response.StatusCode, response.Description);
+                _snackbar.ShowError(message);
+                _logger.LogError(message);
             }
         }
         catch (Exception ex)
         {
-            _snackbar.ShowError($"下载异常：{ex.Message}");
-            _logger.LogError(ex, "WebDav 下载异常");
+            var message = string.Format(_i18n.GetTranslation("DownloadException"), ex.Message);
+            _snackbar.ShowError(message);
+            _logger.LogError(ex, message);
         }
     }
 
@@ -95,8 +99,9 @@ public partial class WebDavContentDialog
             Collections.Remove(Find(fullName));
         else
         {
-            _snackbar.ShowError($"删除失败：{response.StatusCode} {response.Description}");
-            _logger.LogError("WebDav 删除失败：{StatusCode} {Description}", response.StatusCode, response.Description);
+            var message = string.Format(_i18n.GetTranslation("DeleteFailed"), response.StatusCode, response.Description);
+            _snackbar.ShowError(message);
+            _logger.LogError(message);
         }
     }
 
@@ -129,8 +134,9 @@ public partial class WebDavContentDialog
             if (!response.IsSuccessful || response.StatusCode != 201)
             {
                 Collections.First(x => x.FullName == targetFullname).FullName = originFullName;
-                _snackbar.ShowError($"重命名失败：{response.StatusCode} {response.Description}");
-                _logger.LogError("WebDav 重命名失败：{StatusCode} {Description}", response.StatusCode, response.Description);
+                var message = string.Format(_i18n.GetTranslation("RenameFailed"), response.StatusCode, response.Description);
+                _snackbar.ShowError(message);
+                _logger.LogError(message);
             }
         }
         catch (Exception ex)
@@ -139,8 +145,9 @@ public partial class WebDavContentDialog
             _result = ContentDialogResult.None;
             Hide();
 
-            _snackbar.ShowError($"重命名异常：{ex.Message}");
-            _logger.LogError(ex, "WebDav 重命名异常");
+            var message = string.Format(_i18n.GetTranslation("RenameException"), ex.Message);
+            _snackbar.ShowError(message);
+            _logger.LogError(ex, message);
         }
     }
 

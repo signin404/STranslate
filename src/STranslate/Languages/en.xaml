@@ -233,6 +233,20 @@
     <sys:String x:Key="LogLevel">Log Level</sys:String>
     <sys:String x:Key="ConfirmRestartAndBackup">Confirm restart and backup configuration?</sys:String>
     <sys:String x:Key="ConfirmRestartAndRestore">Confirm restart and restore configuration?</sys:String>
+    <sys:String x:Key="BackupType">Backup Type</sys:String>
+    <sys:String x:Key="SelectBackupFile">Select Backup File</sys:String>
+    <sys:String x:Key="SelectRestoreFile">Select Restore File</sys:String>
+    <sys:String x:Key="BackupConfigSuccess">Configuration backup successful [{0}]</sys:String>
+    <sys:String x:Key="RestoreConfigSuccess">Configuration restore successful [{0}]</sys:String>
+    <sys:String x:Key="CheckConfigOrLog">Please check configuration or view logs</sys:String>
+    <sys:String x:Key="BackupSuccess">Backup successful [{0}]</sys:String>
+    <sys:String x:Key="BackupFailed">Backup failed, please check logs</sys:String>
+    <sys:String x:Key="DownloadSuccess">Download successful</sys:String>
+    <sys:String x:Key="DownloadFailed">Download failed: {0} {1}</sys:String>
+    <sys:String x:Key="DownloadException">Download exception: {0}</sys:String>
+    <sys:String x:Key="DeleteFailed">Delete failed: {0} {1}</sys:String>
+    <sys:String x:Key="RenameFailed">Rename failed: {0} {1}</sys:String>
+    <sys:String x:Key="RenameException">Rename exception: {0}</sys:String>
 
     <!--  // Common //  -->
     <sys:String x:Key="Add">Add</sys:String>

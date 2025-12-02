@@ -75,7 +75,7 @@ public partial class AboutViewModel(
         if (Settings.Backup.Type == BackupType.Local)
             await LocalRestoreAsync();
         else
-            await PreWebDavRestoreAsync();
+            await WebDavRestoreAsync();
     }
 
     #endregion
@@ -86,7 +86,7 @@ public partial class AboutViewModel(
     {
         var saveFileDialog = new SaveFileDialog
         {
-            Title = "Select Backup File",
+            Title = i18n.GetTranslation("SelectBackupFile"),
             Filter = "zip(*.zip)|*.zip",
             FileName = $"stranslate_backup_{DateTime.Now:yyyyMMddHHmmss}"
         };
@@ -116,7 +116,7 @@ public partial class AboutViewModel(
             "-d", "3",
             "-l", DataLocation.AppExePath,
             "-c", DataLocation.InfoFilePath,
-            "-w", $"备份配置成功 [{filePath}]"
+            "-w", string.Format(i18n.GetTranslation("BackupConfigSuccess"), filePath)
             ];
         Utilities.ExecuteProgram(DataLocation.HostExePath, args);
         App.Current.Shutdown();
@@ -126,7 +126,7 @@ public partial class AboutViewModel(
     {
         var openFileDialog = new OpenFileDialog
         {
-            Title = "Select Restore File",
+            Title = i18n.GetTranslation("SelectRestoreFile"),
             Filter = "zip(*.zip)|*.zip"
         };
         if (openFileDialog.ShowDialog() != true)
@@ -156,8 +156,8 @@ public partial class AboutViewModel(
             "-d", "3",
             "-l", DataLocation.AppExePath,
             "-c", DataLocation.InfoFilePath,
-            "-w", $"恢复配置成功 [{filePath}]"
-        ];
+            "-w", string.Format(i18n.GetTranslation("RestoreConfigSuccess"), filePath)
+            ];
         Utilities.ExecuteProgram(DataLocation.HostExePath, args);
         App.Current.Shutdown();
     }
@@ -172,7 +172,7 @@ public partial class AboutViewModel(
         var (isSucess, client, message) = await CreateClientAsync();
         if (!isSucess)
         {
-            snackbar.Show("请检查配置或查看日志");
+            snackbar.Show(i18n.GetTranslation("CheckConfigOrLog"));
             logger.LogError($"Backup|CreateClientAsync|Failed Message: {message}");
             return;
         }
@@ -211,7 +211,7 @@ public partial class AboutViewModel(
         var (isSucess, client, message) = await CreateClientAsync();
         if (!isSucess)
         {
-            notification.Show(i18n.GetTranslation("Prompt"), "请检查配置或查看日志");
+            notification.Show(i18n.GetTranslation("Prompt"), i18n.GetTranslation("CheckConfigOrLog"));
             logger.LogError($"Backup|CreateClientAsync|Failed Message: {message}");
             return;
         }
@@ -232,10 +232,10 @@ public partial class AboutViewModel(
 
             // 打印通知
             if (response.IsSuccessful && response.StatusCode == 201)
-                notification.Show(i18n.GetTranslation("Prompt"), $"备份成功 [{fullPath}]");
+                notification.Show(i18n.GetTranslation("Prompt"), string.Format(i18n.GetTranslation("BackupSuccess"), fullPath));
             else
             {
-                notification.Show(i18n.GetTranslation("Prompt"), "备份失败，请检查日志");
+                notification.Show(i18n.GetTranslation("Prompt"), i18n.GetTranslation("BackupFailed"));
                 logger.LogError($"Backup|PutFile|Error Code: {response.StatusCode} Description: {response.Description}");
             }
         }
@@ -249,12 +249,12 @@ public partial class AboutViewModel(
         }
     }
 
-    private async Task PreWebDavRestoreAsync()
+    private async Task WebDavRestoreAsync()
     {
         var (isSucess, client, message) = await CreateClientAsync();
         if (!isSucess)
         {
-            snackbar.Show("请检查配置或查看日志");
+            snackbar.Show(i18n.GetTranslation("CheckConfigOrLog"));
             logger.LogError($"Restore|CreateClientAsync|Failed Message: {message}");
             return;
         }
@@ -311,7 +311,7 @@ public partial class AboutViewModel(
                 "-d", "3",
                 "-l", DataLocation.AppExePath,
                 "-c", DataLocation.InfoFilePath,
-                "-w", $"恢复配置成功"
+                "-w", i18n.GetTranslation("RestoreConfigSuccess")
             ];
             Utilities.ExecuteProgram(DataLocation.HostExePath, args);
             App.Current.Shutdown();
