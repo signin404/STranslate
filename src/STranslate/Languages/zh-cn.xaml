@@ -231,6 +231,8 @@
     <sys:String x:Key="ConfirmDeleteService">确定要删除服务 '{0}' 吗？</sys:String>
     <sys:String x:Key="Close">关闭</sys:String>
     <sys:String x:Key="LogLevel">日志级别</sys:String>
+    <sys:String x:Key="ConfirmRestartAndBackup">是否确认重启并备份配置</sys:String>
+    <sys:String x:Key="ConfirmRestartAndRestore">是否确认重启并恢复配置</sys:String>
 
     <!--  // Common //  -->
     <sys:String x:Key="Add">添加</sys:String>

@@ -222,6 +222,15 @@ fn main() {
                         .required_if_eq("mode", "restore"),
                 )
                 .arg(
+                    Arg::new("delete-file")
+                        .short('r')
+                        .long("delete-file")
+                        .value_name("FILE_PATH")
+                        .help("恢复后删除的文件或目录路径（可选）")
+                        .action(ArgAction::Append)
+                        .required_if_eq("mode", "restore"),
+                )
+                .arg(
                     Arg::new("delay")
                         .short('d')
                         .long("delay")

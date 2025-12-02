@@ -1,15 +1,28 @@
+using CommunityToolkit.Mvvm.DependencyInjection;
+using CommunityToolkit.Mvvm.Input;
+using iNKORE.UI.WPF.Modern.Controls;
+using Microsoft.Extensions.Logging;
+using STranslate.Plugin;
 using STranslate.ViewModels.Pages;
 using System.Collections.ObjectModel;
-using System.Windows;
-using System.Windows.Input;
+using System.IO;
 using WebDav;
 
 namespace STranslate.Controls;
 
 public partial class WebDavContentDialog
 {
+    private readonly ILogger<WebDavContentDialog> _logger = Ioc.Default.GetRequiredService<ILogger<WebDavContentDialog>>();
+    private readonly ISnackbar _snackbar = Ioc.Default.GetRequiredService<ISnackbar>();
+    private readonly WebDavClient _webDavClient;
+    private readonly string _absolutePath;
+
+    public ObservableCollection<WebDavResult> Collections { get; }
+
+    public string FilePath { get; private set; } = string.Empty;
+
     public WebDavContentDialog(
-        WebDavClient client,
+        WebDavClient webDavClient,
         string absolutePath,
         ObservableCollection<WebDavResult> collections)
     {
@@ -17,74 +30,78 @@ public partial class WebDavContentDialog
 
         DataContext = this;
 
-        _client = client;
-        _absolutePth = absolutePath;
+        _webDavClient = webDavClient;
+        _absolutePath = absolutePath;
         Collections = collections;
     }
 
-    private readonly WebDavClient _client;
-    private readonly string _absolutePth;
+    private ContentDialogResult _result = ContentDialogResult.None;
 
-    public ObservableCollection<WebDavResult> Collections { get; }
-
-    public ICommand? DownloadCommand
+    public new async Task<ContentDialogResult> ShowAsync()
     {
-        get => (ICommand?)GetValue(DownloadCommandProperty);
-        set => SetValue(DownloadCommandProperty, value);
+        await base.ShowAsync();
+        return _result;
     }
 
-    public static readonly DependencyProperty DownloadCommandProperty =
-        DependencyProperty.Register(
-            nameof(DownloadCommand),
-            typeof(ICommand),
-            typeof(WebDavContentDialog));
-
-    public ICommand? DeleteCommand
+    [RelayCommand]
+    private async Task DownloadAsync(string fullName)
     {
-        get => (ICommand?)GetValue(DeleteCommandProperty);
-        set => SetValue(DeleteCommandProperty, value);
+        // 下载逻辑
+        if (_absolutePath == null || _webDavClient == null)
+            return;
+
+        try
+        {
+            var path = $"{_absolutePath.TrimEnd('/')}/{fullName}";
+            if (File.Exists(fullName))
+            {
+                File.Delete(fullName);
+            }
+            FilePath = fullName;
+
+            using var response = await _webDavClient.GetRawFile(path);
+            if (response.IsSuccessful && response.StatusCode == 200)
+            {
+                using var fileStream = File.Create(fullName);
+                await response.Stream.CopyToAsync(fileStream);
+
+                _snackbar.ShowSuccess("下载成功");
+
+                _result = ContentDialogResult.Primary;
+                Hide();
+            }
+            else
+            {
+                _snackbar.ShowError($"下载失败：{response.StatusCode} {response.Description}");
+                _logger.LogError("WebDav 下载失败：{StatusCode} {Description}", response.StatusCode, response.Description);
+            }
+        }
+        catch (Exception ex)
+        {
+            _snackbar.ShowError($"下载异常：{ex.Message}");
+            _logger.LogError(ex, "WebDav 下载异常");
+        }
     }
 
-    public static readonly DependencyProperty DeleteCommandProperty =
-        DependencyProperty.Register(
-            nameof(DeleteCommand),
-            typeof(ICommand),
-            typeof(WebDavContentDialog));
+    [RelayCommand]
+    private async Task DeleteAsync(string fullName)
+    {
+        if (_absolutePath == null || _webDavClient == null)
+            return;
 
-    //public ICommand? UpdateCommand
-    //{
-    //    get => (ICommand?)GetValue(UpdateCommandProperty);
-    //    set => SetValue(UpdateCommandProperty, value);
-    //}
+        var path = $"{_absolutePath.TrimEnd('/')}/{fullName}";
+        var response = await _webDavClient.Delete(path);
+        if (response.IsSuccessful && response.StatusCode == 204)
+            Collections.Remove(Find(fullName));
+        else
+        {
+            _snackbar.ShowError($"删除失败：{response.StatusCode} {response.Description}");
+            _logger.LogError("WebDav 删除失败：{StatusCode} {Description}", response.StatusCode, response.Description);
+        }
+    }
 
-    //public static readonly DependencyProperty UpdateCommandProperty =
-    //    DependencyProperty.Register(
-    //        nameof(UpdateCommand),
-    //        typeof(ICommand),
-    //        typeof(WebDavContentDialog));
-
-    //public ICommand? ConfirmCommand
-    //{
-    //    get => (ICommand?)GetValue(ConfirmCommandProperty);
-    //    set => SetValue(ConfirmCommandProperty, value);
-    //}
-
-    //public static readonly DependencyProperty ConfirmCommandProperty =
-    //    DependencyProperty.Register(
-    //        nameof(ConfirmCommand),
-    //        typeof(ICommand),
-    //        typeof(WebDavContentDialog));
-
-    //public ICommand? CancelCommand
-    //{
-    //    get => (ICommand?)GetValue(CancelCommandProperty);
-    //    set => SetValue(CancelCommandProperty, value);
-    //}
-
-    //public static readonly DependencyProperty CancelCommandProperty =
-    //    DependencyProperty.Register(
-    //        nameof(CancelCommand),
-    //        typeof(ICommand),
-    //        typeof(WebDavContentDialog));
-
+    private WebDavResult Find(string fullName)
+    {
+        return Collections.First(x => x.FullName == fullName);
+    }
 }

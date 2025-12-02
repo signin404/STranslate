@@ -229,19 +229,13 @@ public partial class App : ISingleInstanceApp, INavigation, IDisposable
         if (!File.Exists(DataLocation.InfoFilePath))
             return;
 
-        _logger?.LogDebug("Locate the information file and try displaying the information message box.");
-
         try
         {
             var info = File.ReadAllText(DataLocation.InfoFilePath);
             if (string.IsNullOrWhiteSpace(info))
-            {
-                _logger?.LogDebug("The information file is empty, will not show the message box.");
                 return;
-            }
 
             _notification?.Show(Constant.AppName, info);
-            _logger?.LogDebug($"The information message box is shown successfully [{info}].");
         }
         catch (Exception ex)
         {
@@ -251,9 +245,7 @@ public partial class App : ISingleInstanceApp, INavigation, IDisposable
         {
             try
             {
-                _logger?.LogDebug("Try deleting the information file.");
                 File.Delete(DataLocation.InfoFilePath);
-                _logger?.LogDebug("The information file is deleted successfully.");
             }
             catch
             {

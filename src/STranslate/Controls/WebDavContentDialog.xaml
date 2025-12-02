@@ -29,7 +29,7 @@
         </ListBox.Resources>
         <ListBox.ItemTemplate>
             <DataTemplate DataType="page:WebDavResult">
-                <Grid>
+                <Grid Margin="0,4">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="50" />
@@ -37,13 +37,16 @@
                     </Grid.ColumnDefinitions>
 
                     <control:EditableTextBlock
-                        Margin="20,0"
+                        Margin="10,0,20,0"
                         FontSize="{DynamicResource STControlFontSize14}"
                         FontWeight="Bold"
                         Text="{Binding FullName}"
                         ToolTip="{Binding FullName}" />
 
-                    <Button Grid.Column="1" Command="{Binding DataContext.DownloadCommand, RelativeSource={RelativeSource AncestorType=control:WebDavContentDialog}}">
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding DataContext.DownloadCommand, RelativeSource={RelativeSource AncestorType=control:WebDavContentDialog}}"
+                        CommandParameter="{Binding FullName}">
                         <ui:FontIcon FontFamily="{StaticResource {x:Static ui:ThemeKeys.FluentSystemIconsKey}}" Glyph="&#xF14F;" />
                     </Button>
 
@@ -53,20 +56,6 @@
                         CommandParameter="{Binding FullName}">
                         <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.Delete_20_Regular}" />
                     </Button>
-
-                    <!--<Button
-                        Grid.Column="1"
-                        Command="{Binding DataContext.ConfirmCommand, RelativeSource={RelativeSource AncestorType=control:WebDavContentDialog}}"
-                        CommandParameter="{Binding FullName}">
-                        <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.CheckmarkSquare_20_Regular}" />
-                    </Button>
-
-                    <Button
-                        Grid.Column="2"
-                        Command="{Binding DataContext.CancelCommand, RelativeSource={RelativeSource AncestorType=control:WebDavContentDialog}}"
-                        CommandParameter="{Binding FullName}">
-                        <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.DismissSquare_20_Regular}" />
-                    </Button>-->
                 </Grid>
             </DataTemplate>
         </ListBox.ItemTemplate>

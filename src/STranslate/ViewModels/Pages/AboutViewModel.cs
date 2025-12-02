@@ -2,18 +2,15 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using iNKORE.UI.WPF.Modern.Controls;
 using Microsoft.Extensions.Logging;
-using Microsoft.Toolkit.Uwp.Notifications;
 using Microsoft.Win32;
 using STranslate.Controls;
 using STranslate.Core;
 using STranslate.Plugin;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Web;
-using System.Windows;
 using WebDav;
 
 namespace STranslate.ViewModels.Pages;
@@ -67,7 +64,7 @@ public partial class AboutViewModel(
     private async Task BackupAsync()
     {
         if (Settings.Backup.Type == BackupType.Local)
-            LocalBackup();
+            await LocalBackupAsync();
         else
             await PreWebDavBackupAsync();
     }
@@ -76,7 +73,7 @@ public partial class AboutViewModel(
     private async Task RestoreAsync()
     {
         if (Settings.Backup.Type == BackupType.Local)
-            LocalRestore();
+            await LocalRestoreAsync();
         else
             await PreWebDavRestoreAsync();
     }
@@ -85,7 +82,7 @@ public partial class AboutViewModel(
 
     #region Local Backup
 
-    private void LocalBackup()
+    private async Task LocalBackupAsync()
     {
         var saveFileDialog = new SaveFileDialog
         {
@@ -95,6 +92,18 @@ public partial class AboutViewModel(
         };
 
         if (saveFileDialog.ShowDialog() != true)
+            return;
+
+        var dialog = new ContentDialog
+        {
+            Title = i18n.GetTranslation("Prompt"),
+            PrimaryButtonText = i18n.GetTranslation("Confirm"),
+            CloseButtonText = i18n.GetTranslation("Cancel"),
+            DefaultButton = ContentDialogButton.Close,
+            Content = i18n.GetTranslation("ConfirmRestartAndBackup"),
+        };
+        var dialogResult = await dialog.ShowAsync();
+        if (dialogResult != ContentDialogResult.Primary)
             return;
 
         var filePath = saveFileDialog.FileName;
@@ -113,7 +122,7 @@ public partial class AboutViewModel(
         App.Current.Shutdown();
     }
 
-    private void LocalRestore()
+    private async Task LocalRestoreAsync()
     {
         var openFileDialog = new OpenFileDialog
         {
@@ -122,11 +131,25 @@ public partial class AboutViewModel(
         };
         if (openFileDialog.ShowDialog() != true)
             return;
+
+        var dialog = new ContentDialog
+        {
+            Title = i18n.GetTranslation("Prompt"),
+            PrimaryButtonText = i18n.GetTranslation("Confirm"),
+            CloseButtonText = i18n.GetTranslation("Cancel"),
+            DefaultButton = ContentDialogButton.Close,
+            Content = i18n.GetTranslation("ConfirmRestartAndRestore"),
+        };
+        var dialogResult = await dialog.ShowAsync();
+        if (dialogResult != ContentDialogResult.Primary)
+            return;
+
         var filePath = openFileDialog.FileName;
         string[] args = [
-            "backup", "-m",
-            "restore", "-a",
-            filePath, "-s", Constant.Plugins,
+            "backup",
+            "-m", "restore",
+            "-a", filePath,
+            "-s", Constant.Plugins,
             "-t", DataLocation.PluginsDirectory,
             "-s", Constant.Settings,
             "-t", DataLocation.SettingsDirectory,
@@ -146,13 +169,25 @@ public partial class AboutViewModel(
     private async Task PreWebDavBackupAsync()
     {
         // 测试连接是否成功
-        var result = await CreateClientAsync();
-        if (!result.isSucess)
+        var (isSucess, client, message) = await CreateClientAsync();
+        if (!isSucess)
         {
             snackbar.Show("请检查配置或查看日志");
-            logger.LogError($"Backup|CreateClientAsync|Failed Message: {result.message}");
+            logger.LogError($"Backup|CreateClientAsync|Failed Message: {message}");
             return;
         }
+
+        var dialog = new ContentDialog
+        {
+            Title = i18n.GetTranslation("Prompt"),
+            PrimaryButtonText = i18n.GetTranslation("Confirm"),
+            CloseButtonText = i18n.GetTranslation("Cancel"),
+            DefaultButton = ContentDialogButton.Close,
+            Content = i18n.GetTranslation("ConfirmRestartAndBackup"),
+        };
+        var dialogResult = await dialog.ShowAsync();
+        if (dialogResult != ContentDialogResult.Primary)
+            return;
 
         var fileName = $"stranslate_backup_{DateTime.Now:yyyyMMddHHmmss}.zip";
         var filePath = Path.Combine(Constant.ProgramDirectory, fileName);
@@ -173,36 +208,34 @@ public partial class AboutViewModel(
 
     public async Task PostWebDavBackupAsync(string filePath)
     {
-        var result = await CreateClientAsync();
-        if (!result.isSucess)
+        var (isSucess, client, message) = await CreateClientAsync();
+        if (!isSucess)
         {
-            notification.Show(i18n.GetTranslation("Toast"), "请检查配置或查看日志");
-            logger.LogError($"Backup|CreateClientAsync|Failed Message: {result.message}");
+            notification.Show(i18n.GetTranslation("Prompt"), "请检查配置或查看日志");
+            logger.LogError($"Backup|CreateClientAsync|Failed Message: {message}");
             return;
         }
-
-        var client = result.client;
-        var absolutePath = result.message;
 
         var fileName = Path.GetFileName(filePath);
 
         try
         {
             // 检查该路径是否存在
-            var ret = await client.Propfind(absolutePath);
+            var ret = await client.Propfind(message);
             if (!ret.IsSuccessful)
                 // 不存在则创建目录
-                await client.Mkcol(absolutePath);
+                await client.Mkcol(message);
 
+            var fullPath = $"{message}{fileName}";
             using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            var response = await client.PutFile($"{absolutePath}{fileName}", fileStream);
+            var response = await client.PutFile(fullPath, fileStream);
 
             // 打印通知
             if (response.IsSuccessful && response.StatusCode == 201)
-                notification.Show(i18n.GetTranslation("Toast"), "备份成功");
+                notification.Show(i18n.GetTranslation("Prompt"), $"备份成功 [{fullPath}]");
             else
             {
-                notification.Show(i18n.GetTranslation("Toast"), "备份失败，请检查日志");
+                notification.Show(i18n.GetTranslation("Prompt"), "备份失败，请检查日志");
                 logger.LogError($"Backup|PutFile|Error Code: {response.StatusCode} Description: {response.Description}");
             }
         }
@@ -218,24 +251,21 @@ public partial class AboutViewModel(
 
     private async Task PreWebDavRestoreAsync()
     {
-        var result = await CreateClientAsync();
-        if (!result.isSucess)
+        var (isSucess, client, message) = await CreateClientAsync();
+        if (!isSucess)
         {
             snackbar.Show("请检查配置或查看日志");
-            logger.LogError($"Restore|CreateClientAsync|Failed Message: {result.message}");
+            logger.LogError($"Restore|CreateClientAsync|Failed Message: {message}");
             return;
         }
-
-        var client = result.client;
-        var absolutePath = result.message;
 
         try
         {
             //检查该路径是否存在
-            var ret = await client.Propfind(absolutePath);
+            var ret = await client.Propfind(message);
             if (!ret.IsSuccessful)
                 //不存在则创建目录
-                await client.Mkcol(absolutePath);
+                await client.Mkcol(message);
             else
                 //添加结果到viewmodel
                 foreach (var res in ret.Resources)
@@ -244,19 +274,63 @@ public partial class AboutViewModel(
                         continue;
 
                     //html解码以显示中文
-                    var decodeFullName = HttpUtility.UrlDecode(res.Uri).Replace(absolutePath, "").Trim('/');
+                    var decodeFullName = HttpUtility.UrlDecode(res.Uri).Replace(message, "").Trim('/');
                     _collections.Add(new WebDavResult(decodeFullName));
                 }
 
-            var contentDialog = new WebDavContentDialog(client, absolutePath, _collections);
-            if (await contentDialog.ShowAsync() == ContentDialogResult.Primary)
+            var contentDialog = new WebDavContentDialog(client, message, _collections);
+            if (await contentDialog.ShowAsync() != ContentDialogResult.Primary)
             {
-
+                CleanupCache(contentDialog.FilePath);
+                return;
+            }
+            var dialog = new ContentDialog
+            {
+                Title = i18n.GetTranslation("Prompt"),
+                PrimaryButtonText = i18n.GetTranslation("Confirm"),
+                CloseButtonText = i18n.GetTranslation("Cancel"),
+                DefaultButton = ContentDialogButton.Close,
+                Content = i18n.GetTranslation("ConfirmRestartAndRestore"),
+            };
+            var dialogResult = await dialog.ShowAsync();
+            if (dialogResult != ContentDialogResult.Primary)
+            {
+                CleanupCache(contentDialog.FilePath);
+                return;
             }
 
-            _collections.Clear();
+            string[] args = [
+                "backup",
+                "-m", "restore",
+                "-a", contentDialog.FilePath,
+                "-s", Constant.Plugins,
+                "-t", DataLocation.PluginsDirectory,
+                "-s", Constant.Settings,
+                "-t", DataLocation.SettingsDirectory,
+                "-r", contentDialog.FilePath,
+                "-d", "3",
+                "-l", DataLocation.AppExePath,
+                "-c", DataLocation.InfoFilePath,
+                "-w", $"恢复配置成功"
+            ];
+            Utilities.ExecuteProgram(DataLocation.HostExePath, args);
+            App.Current.Shutdown();
         }
         catch { }
+        finally
+        {
+            _collections.Clear();
+        }
+
+        void CleanupCache(string path)
+        {
+            try
+            {
+                if (File.Exists(path))
+                    File.Delete(path);
+            }
+            catch { }
+        }
     }
 
     private ObservableCollection<WebDavResult> _collections = [];

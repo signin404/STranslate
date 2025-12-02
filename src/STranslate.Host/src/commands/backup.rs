@@ -27,6 +27,7 @@ pub fn handle_backup_command(matches: &ArgMatches) -> Result<(), Box<dyn Error>>
     let launch_path = matches.get_one::<String>("launch");
     let create_file = matches.get_one::<String>("create-file");
     let file_content = matches.get_one::<String>("file-content");
+    let delete_file = matches.get_one::<String>("delete-file");
 
     if delay > 0 {
         if verbose {
@@ -75,6 +76,12 @@ pub fn handle_backup_command(matches: &ArgMatches) -> Result<(), Box<dyn Error>>
             for (source, target) in source_dirs.iter().zip(targets.iter()) {
                 restore_directory(archive, source, target, verbose)?;
                 println!("✅ 恢复完成: {} → {}", source, target);
+            }
+
+            if let Some(file_path) = delete_file {
+                if !file_path.trim().is_empty() {
+                    delete_file_or_directory(file_path, verbose)?;
+                }
             }
         }
     }
@@ -317,6 +324,37 @@ fn normalize_zip_path(value: &str) -> String {
 
 fn file_options() -> FileOptions {
     FileOptions::default().compression_method(CompressionMethod::Deflated)
+}
+
+fn delete_file_or_directory(file_path: &str, verbose: bool) -> Result<(), Box<dyn Error>> {
+    let path = Path::new(file_path);
+
+    if !path.exists() {
+        if verbose {
+            println!("⚠️  文件或目录不存在，跳过删除: {}", file_path);
+        }
+        return Ok(());
+    }
+
+    if verbose {
+        if path.is_dir() {
+            println!("🗑️  删除目录: {}", file_path);
+        } else {
+            println!("🗑️  删除文件: {}", file_path);
+        }
+    }
+
+    if path.is_dir() {
+        fs::remove_dir_all(path).map_err(|e| format!("删除目录失败: {}", e))?;
+    } else {
+        fs::remove_file(path).map_err(|e| format!("删除文件失败: {}", e))?;
+    }
+
+    if verbose {
+        println!("✅ 删除成功");
+    }
+
+    Ok(())
 }
 
 fn create_file_with_content(

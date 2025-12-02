@@ -231,6 +231,8 @@
     <sys:String x:Key="ConfirmDeleteService">Are you sure you want to delete service '{0}'?</sys:String>
     <sys:String x:Key="Close">Close</sys:String>
     <sys:String x:Key="LogLevel">Log Level</sys:String>
+    <sys:String x:Key="ConfirmRestartAndBackup">Confirm restart and backup configuration?</sys:String>
+    <sys:String x:Key="ConfirmRestartAndRestore">Confirm restart and restore configuration?</sys:String>
 
     <!--  // Common //  -->
     <sys:String x:Key="Add">Add</sys:String>
