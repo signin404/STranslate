@@ -33,6 +33,9 @@ public partial class AboutPage
     private void OnSponsorRequest(object sender, RoutedEventArgs e) =>
         Process.Start(new ProcessStartInfo(Constant.Sponsor) { UseShellExecute = true });
 
+    private void OnJoinGroupRequest(object sender, RoutedEventArgs e) =>
+        Process.Start(new ProcessStartInfo(Constant.Group) { UseShellExecute = true });
+
     private void OnReportRequest(object sender, RoutedEventArgs e) =>
         Process.Start(new ProcessStartInfo(Constant.Report) { UseShellExecute = true });
 }

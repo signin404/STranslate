@@ -26,9 +26,10 @@ public class Constant
     public const string InfoFileName = ".INFO";
     public const string BackupFileName = ".BACKUP";
 
-    public const string Website = "https://stranslate.zggsong.com";
-    public const string Sponsor = "https://github.com/ZGGSONG/STranslate";
     public const string GitHub = "https://github.com/ZGGSONG/STranslate";
+    public const string Website = "https://stranslate.zggsong.com";
+    public const string Sponsor = "https://github.com/ZGGSONG/STranslate/tree/2.0?tab=readme-ov-file#donations";
+    public const string Group = "https://t.me/+lTVZGHgZtp0zMTVl";
     public const string Report = "https://github.com/zggsong/stranslate/issues/new/choose";
     public const string Dev = "Dev";
     public static readonly string Version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location.NonNull()).ProductVersion.NonNull();

@@ -195,6 +195,15 @@
                         </ui:SettingsCard>
 
                         <ui:SettingsCard
+                            Click="OnJoinGroupRequest"
+                            Header="{DynamicResource Group}"
+                            IsClickEnabled="True">
+                            <ui:SettingsCard.ActionIcon>
+                                <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.Open_24_Regular}" />
+                            </ui:SettingsCard.ActionIcon>
+                        </ui:SettingsCard>
+
+                        <ui:SettingsCard
                             Click="OnReportRequest"
                             Header="{DynamicResource Report}"
                             IsClickEnabled="True">

@@ -230,6 +230,7 @@
     <sys:String x:Key="CloneRepository">複製存庫</sys:String>
     <sys:String x:Key="Website">網站</sys:String>
     <sys:String x:Key="Sponsor">贊助</sys:String>
+    <sys:String x:Key="Group">群組</sys:String>
     <sys:String x:Key="Report">發現Bug或請求新功能</sys:String>
     <sys:String x:Key="ConfirmDelete">確認刪除?</sys:String>
     <sys:String x:Key="ConfirmDeleteService">確定要刪除服務 '{0}' 嗎？</sys:String>

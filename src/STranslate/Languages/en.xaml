@@ -230,6 +230,7 @@
     <sys:String x:Key="CloneRepository">Clone repository</sys:String>
     <sys:String x:Key="Website">Website</sys:String>
     <sys:String x:Key="Sponsor">Sponsor</sys:String>
+    <sys:String x:Key="Group">Group</sys:String>
     <sys:String x:Key="Report">Find a bug or request new sample</sys:String>
     <sys:String x:Key="ConfirmDelete">Confirm Delete?</sys:String>
     <sys:String x:Key="ConfirmDeleteService">Are you sure you want to delete service '{0}'?</sys:String>

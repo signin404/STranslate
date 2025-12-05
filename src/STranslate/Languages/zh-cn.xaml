@@ -230,6 +230,7 @@
     <sys:String x:Key="CloneRepository">仓库</sys:String>
     <sys:String x:Key="Website">网站</sys:String>
     <sys:String x:Key="Sponsor">赞助</sys:String>
+    <sys:String x:Key="Group">群组</sys:String>
     <sys:String x:Key="Report">发现Bug或请求新功能</sys:String>
     <sys:String x:Key="ConfirmDelete">确认删除?</sys:String>
     <sys:String x:Key="ConfirmDeleteService">确定要删除服务 '{0}' 吗？</sys:String>
