@@ -1,6 +1,7 @@
 # 从命令行参数获取版本号,如果未提供则使用默认值
 param(
-    [string]$Version = "2.0.0"
+    [string]$Version = "2.0.0",
+    [string]$RepoUrl = "https://github.com/ZGGSONG/STranslate"
 )
 
 $ErrorActionPreference = "Stop"
@@ -44,7 +45,7 @@ try {
     # 记录下载前的文件
     $filesBefore = Get-ChildItem -Path $OutputPath -File | Select-Object -ExpandProperty Name
     
-    vpk download github --repoUrl https://github.com/ZGGSONG/STranslate -o $OutputPath
+    vpk download github --repoUrl $RepoUrl -o $OutputPath
     
     if ($LASTEXITCODE -eq 0) {
         Log "成功下载最新 release" "Green"

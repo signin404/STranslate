@@ -299,10 +299,6 @@ public partial class App : ISingleInstanceApp, INavigation, IDisposable
         if (!SingleInstance<App>.InitializeAsFirstInstance())
             return;
 
-        TryMoveTmpConfigDirectory();
-
-        using var application = new App();
-
         if (NeedAdmin())
         {
 #if DEBUG
@@ -311,18 +307,24 @@ public partial class App : ISingleInstanceApp, INavigation, IDisposable
 #endif
             return;
         }
-        VelopackApp.Build().Run();
+
+        VelopackApp
+            .Build()
+            .OnAfterUpdateFastCallback(_ => TryGetPortableConfig())
+            .Run();
+
+        using var application = new App();
         application.InitializeComponent();
         application.Run();
     }
 
-    private static void TryMoveTmpConfigDirectory()
+    private static void TryGetPortableConfig()
     {
         try
         {
             if (!Directory.Exists(DataLocation.TmpConfigDirectory))
                 return;
-            
+
             FilesFolders.CopyAll(DataLocation.TmpConfigDirectory, DataLocation.PortableDataPath);
         }
         catch
@@ -344,9 +346,12 @@ public partial class App : ISingleInstanceApp, INavigation, IDisposable
 
     private static bool NeedAdmin()
     {
-        var mode = _settings?.StartMode;
-
-        if (mode == null || mode == StartMode.Normal)
+        var filePath = Path.Combine(DataLocation.SettingsDirectory, $"Settings.json");
+        if (!File.Exists(filePath))
+            return false;
+        var parsedData = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(filePath));
+        if (!Enum.TryParse<StartMode>(parsedData?["StartMode"]?.ToString(), out var mode)
+                || mode == StartMode.Normal)
             return false;
 
         // 如果已经是管理员模式，则不需要再次提升
@@ -359,7 +364,7 @@ public partial class App : ISingleInstanceApp, INavigation, IDisposable
             UACHelper.Create();
         }
 
-        UACHelper.Run(mode.Value);
+        UACHelper.Run(mode);
 
         return true;
     }

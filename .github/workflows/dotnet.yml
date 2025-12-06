@@ -30,9 +30,12 @@ jobs:
 
     - name: Build and Package
       shell: pwsh
+      env:
+        VERSION: ${{ github.ref_name }}
+        REPO_URL: ${{ github.server_url }}/${{ github.repository }}
       run: |
-        .\build.ps1 ${{ github.ref_name }}
-        .\post_build.ps1 ${{ github.ref_name }}
+        .\build.ps1 $env:VERSION
+        .\post_build.ps1 -Version $env:VERSION -RepoUrl $env:REPO_URL
 
     - name: Release
       uses: softprops/action-gh-release@v2
