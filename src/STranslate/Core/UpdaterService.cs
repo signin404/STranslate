@@ -34,7 +34,7 @@ public class UpdaterService(
             if (newUpdateInfo == null)
             {
                 if (!silentUpdate)
-                    MessageBox.Show(i18n.GetTranslation("NoUpdateInfoFound"));
+                    MessageBox.Show(i18n.GetTranslation("NoUpdateInfoFound"), Constant.AppName);
                 logger.LogInformation("No update info found.");
                 return;
             }
@@ -47,7 +47,7 @@ public class UpdaterService(
             if (newReleaseVersion <= currentVersion)
             {
                 if (!silentUpdate)
-                    MessageBox.Show(i18n.GetTranslation("AlreadyLatestVersion"));
+                    MessageBox.Show(i18n.GetTranslation("AlreadyLatestVersion"), Constant.AppName);
                 logger.LogInformation("You are already on the latest version.");
                 return;
             }
@@ -65,7 +65,7 @@ public class UpdaterService(
                 if (!FilesFolders.VerifyBothFolderFilesEqual(DataLocation.PortableDataPath, DataLocation.TmpConfigDirectory, MessageBox.Show))
                     MessageBox.Show(string.Format(i18n.GetTranslation("PortableDataMoveError"),
                         DataLocation.PortableDataPath,
-                        DataLocation.TmpConfigDirectory));
+                        DataLocation.TmpConfigDirectory), Constant.AppName);
             }
 
             var newVersionTips = NewVersionTips(newReleaseVersion.ToString());
@@ -74,7 +74,7 @@ public class UpdaterService(
                 notification.Show(i18n.GetTranslation("UpdateReady"), newVersionTips);
             logger.LogInformation($"Update success:{newVersionTips}");
 
-            if (MessageBox.Show(newVersionTips, "STranslate", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            if (MessageBox.Show(newVersionTips, Constant.AppName, MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 updateManager.WaitExitThenApplyUpdates(newUpdateInfo);
                 Application.Current.Shutdown();

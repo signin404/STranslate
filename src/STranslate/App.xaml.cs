@@ -299,6 +299,11 @@ public partial class App : ISingleInstanceApp, INavigation, IDisposable
         if (!SingleInstance<App>.InitializeAsFirstInstance())
             return;
 
+        VelopackApp
+            .Build()
+            .OnAfterUpdateFastCallback(_ => TryGetPortableConfig())
+            .Run();
+
         if (NeedAdmin())
         {
 #if DEBUG
@@ -307,11 +312,6 @@ public partial class App : ISingleInstanceApp, INavigation, IDisposable
 #endif
             return;
         }
-
-        VelopackApp
-            .Build()
-            .OnAfterUpdateFastCallback(_ => TryGetPortableConfig())
-            .Run();
 
         using var application = new App();
         application.InitializeComponent();
@@ -346,27 +346,37 @@ public partial class App : ISingleInstanceApp, INavigation, IDisposable
 
     private static bool NeedAdmin()
     {
-        var filePath = Path.Combine(DataLocation.SettingsDirectory, $"Settings.json");
+        var filePath = Path.Combine(DataLocation.SettingsDirectory, "Settings.json");
         if (!File.Exists(filePath))
             return false;
-        var parsedData = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(filePath));
-        if (!Enum.TryParse<StartMode>(parsedData?["StartMode"]?.ToString(), out var mode)
-                || mode == StartMode.Normal)
-            return false;
 
-        // 如果已经是管理员模式，则不需要再次提升
-        if (UACHelper.IsUserAdministrator())
-            return false;
-
-        // 如果是跳过UAC管理员模式，则检查，如果缺失则先创建计划任务
-        if (mode == StartMode.SkipUACAdmin)
+        try
         {
-            UACHelper.Create();
+            var jsonContent = File.ReadAllText(filePath);
+            var parsedData = System.Text.Json.Nodes.JsonNode.Parse(jsonContent);
+
+            if (!Enum.TryParse<StartMode>(parsedData?["StartMode"]?.ToString(), out var mode)
+                || mode == StartMode.Normal)
+                return false;
+
+            // 如果已经是管理员模式,则不需要再次提升
+            if (UACHelper.IsUserAdministrator())
+                return false;
+
+            // 如果是跳过UAC管理员模式,则检查,如果缺失则先创建计划任务
+            if (mode == StartMode.SkipUACAdmin)
+            {
+                UACHelper.Create();
+            }
+
+            UACHelper.Run(mode);
+            return true;
         }
-
-        UACHelper.Run(mode);
-
-        return true;
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Cannot parse Settings.json for admin check: {ex.Message}");
+            return false;
+        }
     }
 
     #endregion
