@@ -87,11 +87,17 @@ public partial class ServiceContentDialog : INotifyPropertyChanged
         set => SetValue(SelectedItemProperty, value);
     }
 
+    public object? Result { get; set; }
+
     public static readonly DependencyProperty SelectedItemProperty =
         DependencyProperty.Register(nameof(SelectedItem), typeof(object), typeof(ServiceContentDialog), null);
 
     private void OnClosed(ContentDialog sender, ContentDialogClosedEventArgs args)
-        => _collectionViewSource.Filter -= OnFilter;
+    {
+        // 关闭前先缓存结果，以防数据源被释放
+        Result = SelectedItem;
+        _collectionViewSource.Filter -= OnFilter;
+    }
 
     protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

@@ -68,7 +68,7 @@ public abstract partial class BaseService : ObservableObject, IDisposable
         var contentDialog = new ServiceContentDialog(title, Plugins);
         if (await contentDialog.ShowAsync() == ContentDialogResult.Primary)
         {
-            if (contentDialog.SelectedItem is PluginMetaData metaData)
+            if (contentDialog.Result is PluginMetaData metaData)
             {
                 var service = _serviceManager.AddService(metaData, ServiceType);
                 // 非翻译服务默认关闭
