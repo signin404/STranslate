@@ -69,9 +69,15 @@
 
 ## 作者
 
-**STranslate** © [zggsong](https://github.com/zggsong), Released under the [MIT](https://github.com/STranslate/STranslate/blob/main/LICENSE) License.<br>
+**STranslate**
 
-> Website [Blog](https://www.zggsong.com) · GitHub [@zggsong](https://github.com/zggsong)
+版权所有 © [zggsong](https://github.com/zggsong)
+
+- 原始作者：[@zggsong](https://github.com/zggsong)
+- 项目组织：[STranslate](https://github.com/STranslate)
+- 许可证：[MIT](./LICENSE)
+
+> [Website](https://stranslate.zggsong.com) [Blog](https://www.zggsong.com)
 
 ## 星标历史
 

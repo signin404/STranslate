@@ -66,11 +66,18 @@ If you like it, you can buy the author a cup of coffee.
 | :--: | :--: |
 |![wehcatpay](./images/wechatpay.jpg) | ![alipay](./images/alipay.jpg) |
 
-## Author
+## Author & Maintainer
 
-**STranslate** © [zggsong](https://github.com/zggsong), Released under the [MIT](https://github.com/STranslate/STranslate/blob/main/LICENSE) License.<br>
+**STranslate**
 
-> Website [Blog](https://www.zggsong.com) · GitHub [@zggsong](https://github.com/zggsong)
+Copyright © [zggsong](https://github.com/zggsong)
+
+- Original author: [zggsong](https://github.com/zggsong)
+- Organization: [STranslate](https://github.com/STranslate)
+- License: [MIT](./LICENSE)
+
+> [Website](https://stranslate.zggsong.com) [Blog](https://www.zggsong.com)
+
 
 ## Star History
 
