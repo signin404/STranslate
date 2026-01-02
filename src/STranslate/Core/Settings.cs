@@ -365,7 +365,7 @@ public partial class Settings : ObservableObject
     #region Private Methods
 
     private Timer? _saveTimer;
-    private readonly Lock _timerLock = new();
+    private readonly object _timerLock = new();
     private const int DebounceTimeMs = 500; // 防抖时间
     internal void SaveWithDebounce()
     {
