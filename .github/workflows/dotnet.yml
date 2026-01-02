@@ -1,7 +1,5 @@
 name: Public STranslate
 
-# https://github.com/softprops/action-gh-release/issues/236#issuecomment-1150530128
-# 无需 Token 即可发布
 permissions:
   contents: write
 
@@ -10,11 +8,12 @@ on:
     types: [published]
   push:
     tags:
-      - "*" # Push events to matching *, i.e. 1.0, 20.15.10
+      - "*" 
+  workflow_dispatch: # 手动触发
 
 jobs:
   build:
-    runs-on: windows-latest # 添加EnableWindowsTargeting可支持跨平台编译WPF项目
+    runs-on: windows-latest
 
     steps:
     - name: Checkout
@@ -31,11 +30,44 @@ jobs:
     - name: Build and Pack
       shell: pwsh
       env:
-        VERSION: ${{ github.ref_name }}
+        REF_TYPE: ${{ github.ref_type }}
+        REF_NAME: ${{ github.ref_name }}
         REPO_URL: ${{ github.server_url }}/${{ github.repository }}
       run: |
-        .\build.ps1 $env:VERSION
-        .\post_build.ps1 -Version $env:VERSION -RepoUrl $env:REPO_URL
+        $version = $env:REF_NAME
+        
+        # 手动触发时强制使用纯数字版本 0.0.1
+        if ($env:REF_TYPE -ne 'tag') {
+            Write-Host "Manual build detected. Overriding version to '0.0.1'"
+            $version = "0.0.1"
+        }
+
+        .\build.ps1 $version
+        .\post_build.ps1 -Version $version -RepoUrl $env:REPO_URL
+
+    # --- 调试步骤：列出所有生成的文件 ---
+    # 如果上传还是空的，请查看这一步的日志，看看到底有没有生成文件，以及文件在哪
+    - name: List Output Files (Debug)
+      shell: pwsh
+      run: |
+        Write-Host "Listing 'publish' directory:"
+        Get-ChildItem -Path "publish" -Recurse -ErrorAction SilentlyContinue
+        
+        Write-Host "Listing 'src/.artifacts/Release' directory:"
+        Get-ChildItem -Path "src/.artifacts/Release" -Recurse -ErrorAction SilentlyContinue
+
+    # --- 修改后：上传所有构建产物 ---
+    # 同时上传安装包(publish)和编译好的绿色版文件(artifacts)
+    # 使用 if: always() 确保即使后面发布步骤失败，也能下载文件
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      if: always() 
+      with:
+        name: STranslate-Build-All
+        path: |
+          publish/
+          src/.artifacts/Release/
+        retention-days: 3
 
     - name: Release
       uses: softprops/action-gh-release@v2
@@ -43,6 +75,6 @@ jobs:
       with:
         tag_name: ${{ github.ref_name }}
         body_path: CHANGELOG.md
-        draft: false # 设置为 false 可立即发布版本
+        draft: false
         files: |
-          publish/*
+          publish/STranslate-win-Portable.zip
