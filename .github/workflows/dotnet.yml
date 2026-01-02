@@ -65,7 +65,7 @@ jobs:
       with:
         name: STranslate-Build-All
         path: |
-          publish/STranslate-win-Portable.zip
+          src/.artifacts/Release/
         retention-days: 3
 
     - name: Release
